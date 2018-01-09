@@ -12,11 +12,15 @@ internal final class DatabaseConnectionPoolCache {
     /// The container to use.
     private let container: Container
 
+    /// Maximum connections.
+    private let maxConnections: UInt
+
     /// Creates a new connection pool cache for the supplied
     /// databases using a given container.
-    internal init(databases: Databases, on container: Container) {
+    internal init(databases: Databases, on container: Container, maxConnections: UInt) {
         self.databases = databases
         self.container = container
+        self.maxConnections = maxConnections
         self.cache = [:]
     }
 
@@ -32,7 +36,7 @@ internal final class DatabaseConnectionPoolCache {
             }
 
             let new = try database.makeConnectionPool(
-                max: 2,
+                max: maxConnections,
                 using: container.make(for: D.Connection.self),
                 on: container
             )
