@@ -1,3 +1,5 @@
+import Service
+
 /// Represents an active connection.
 internal final class ActiveDatabaseConnection {
     /// Handles connection release
@@ -14,7 +16,7 @@ internal final class ActiveDatabaseConnection {
 }
 
 /// Caches active connections
-internal final class ActiveDatabaseConnectionCache {
+internal final class ActiveDatabaseConnectionCache: Service {
     /// Storage
     var cache: [String: ActiveDatabaseConnection]
 

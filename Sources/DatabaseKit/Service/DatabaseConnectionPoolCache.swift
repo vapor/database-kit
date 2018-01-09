@@ -2,7 +2,7 @@ import Service
 
 /// Caches database connection pools.
 /// This is stored on an event loop to allow connection pool re-use.
-internal final class DatabaseConnectionPoolCache {
+internal final class DatabaseConnectionPoolCache: Service {
     /// The source databases.
     private let databases: Databases
 
