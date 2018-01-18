@@ -13,3 +13,13 @@ public protocol DatabaseConnection: DatabaseConnectable {
     /// Closes the database connection when finished.
     func close()
 }
+
+
+extension DatabaseConnection {
+    /// See `DatabaseConnectable.connect(to:)`
+    public func connect<D>(to database: DatabaseIdentifier<D>?) -> Future<D.Connection> {
+        assert(database == nil, "Unexpected \(#function): nil database identifier")
+        assert(self is D.Connection, "Unexpected \(#function): \(self) not \(D.Connection.self)")
+        return Future(self as! D.Connection)
+    }
+}
