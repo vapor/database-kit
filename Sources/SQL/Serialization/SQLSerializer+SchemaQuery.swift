@@ -5,28 +5,28 @@ extension SQLSerializer {
         let table = makeEscapedString(from: query.table)
 
         switch query.statement {
-        case .create(let columns, let foreignKeys):
+        case .create:
             statement.append("CREATE TABLE")
             statement.append(table)
 
-            let columns = columns.map { serialize(column: $0) }
-                + foreignKeys.map { serialize(foreignKey: $0) }
+            let columns = query.addColumns.map { serialize(column: $0) }
+                + query.addForeignKeys.map { serialize(foreignKey: $0) }
             statement.append("(" + columns.joined(separator: ", ") + ")")
-        case .alter(let columns, let deleteColumns, let deleteForeignKeys):
+        case .alter:
             statement.append("ALTER TABLE")
             statement.append(table)
 
-            let adds = columns.map { "ADD " + serialize(column: $0) }
+            let adds = query.addColumns.map { "ADD " + serialize(column: $0) }
             if adds.count > 0 {
                 statement.append(adds.joined(separator: ", "))
             }
 
-            let deletes = deleteColumns.map { "DROP " + makeEscapedString(from: $0) }
+            let deletes = query.deleteColumns.map { "DROP " + makeEscapedString(from: $0) }
             if deletes.count > 0 {
                 statement.append(deletes.joined(separator: ", "))
             }
 
-            let deleteFKs = deleteForeignKeys.map { "DROP FOREIGN KEY " + makeEscapedString(from: $0) }
+            let deleteFKs = query.deleteForeignKeys.map { "DROP FOREIGN KEY " + makeEscapedString(from: $0) }
             if deleteFKs.count > 0 {
                 statement.append(deleteFKs.joined(separator: ", "))
             }

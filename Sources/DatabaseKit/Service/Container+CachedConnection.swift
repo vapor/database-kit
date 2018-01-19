@@ -10,7 +10,7 @@ extension Container {
     ///
     /// You must call `.releaseCachedConnections()` to release the connections.
     public func requestCachedConnection<Database>(to database: DatabaseIdentifier<Database>) -> Future<Database.Connection> {
-        return Future {
+        return Future.flatMap {
             let connections = try self.make(ActiveDatabaseConnectionCache.self, for: Self.self)
             if let current = connections.cache[database.uid]?.connection as? Future<Database.Connection> {
                 return current
