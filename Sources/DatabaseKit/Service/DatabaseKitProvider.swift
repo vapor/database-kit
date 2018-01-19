@@ -25,15 +25,11 @@ public final class DatabaseKitProvider: Provider {
         }
 
         services.register(isSingleton: true) { worker -> DatabaseConnectionPoolCache in
-            let container: Container
-            if let sub = worker as? SubContainer {
-                container = sub.superContainer
-            } else {
-                container = worker
-            }
+            let container = worker as! SubContainer // must be subcontainer, or we will create a cycle
             return try DatabaseConnectionPoolCache(
                 databases: worker.make(for: DatabaseConnectionPoolCache.self),
-                on: container
+                on: container.superContainer,
+                maxConnections: 2 // make this configurable
             )
         }
 

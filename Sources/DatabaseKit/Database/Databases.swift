@@ -1,5 +1,7 @@
+import Service
+
 /// Represents the databases currently configured for Fluent.
-public struct Databases {
+public struct Databases: Service {
     /// Internal storage: [DatabaseIdentifier: Database]
     private let storage: [String: Any]
 

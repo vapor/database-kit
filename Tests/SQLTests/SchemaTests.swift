@@ -14,10 +14,7 @@ final class SchemaTests: XCTestCase {
         let age = SchemaColumn(name: "age", dataType: "INT NOT NULL")
         columns.append(age)
 
-        let create = SchemaQuery(
-            statement: .create(columns: columns, foreignKeys: []),
-            table: "users"
-        )
+        let create = SchemaQuery.create(table: "users", columns: columns, foreignKeys: [])
         XCTAssertEqual(
             GeneralSQLSerializer.shared.serialize(schema: create),
             "CREATE TABLE `users` (`id` UUID PRIMARY KEY, `name` STRING NOT NULL, `age` INT NOT NULL)"

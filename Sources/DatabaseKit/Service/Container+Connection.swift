@@ -1,9 +1,7 @@
 import Async
 import Service
 
-// MARK: Connection
-
-/// Create non-pooled connections that can be closed when done.
+/// Create connections that are automatically released when done.
 extension Container {
     /// Returns a future database connection for the
     /// supplied database identifier if one can be fetched.
@@ -14,20 +12,24 @@ extension Container {
         to database: DatabaseIdentifier<Database>,
         closure: @escaping (Database.Connection) throws -> Future<T>
     ) -> Future<T> {
-        return makeConnection(to: database).flatMap(to: T.self) { conn in
-            return try closure(conn).map(to: T.self) { e in
-                conn.close()
-                return e
+        return requestConnection(to: database).flatMap(to: T.self) { conn in
+            return try closure(conn).map(to: T.self) { result in
+                self.releaseConnection(conn, to: database)
+                return result
             }
         }
     }
+}
 
+/// Request / release database connections.
+extension Container {
     /// Requests a connection to the database.
-    /// Call `.close` on the connection when you are finished.
-    public func makeConnection<Database>(
+    ///
+    /// Call `.releaseConnection(_:to:)` on the connection when you are finished.
+    public func requestConnection<Database>(
         to database: DatabaseIdentifier<Database>
     ) -> Future<Database.Connection> {
-        return Future {
+        return Future.flatMap {
             let databases = try self.make(Databases.self, for: Self.self)
 
             guard let db = databases.database(for: database) else {
@@ -39,5 +41,13 @@ extension Container {
                 on: self
             )
         }
+    }
+
+    /// Releases a connection created by `.requestConnection(to:)`
+    public func releaseConnection<Database>(
+        _ conn: Database.Connection,
+        to database: DatabaseIdentifier<Database>
+    ) {
+        conn.close()
     }
 }

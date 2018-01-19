@@ -2,7 +2,7 @@ import Async
 import Service
 
 /// Helper struct for configuring databases.
-public struct DatabaseConfig {
+public struct DatabaseConfig: Service {
     /// Lazy closure for initializing a database.
     public typealias LazyDatabase<D: Database> = (Container) throws -> D
 
