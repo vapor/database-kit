@@ -14,7 +14,7 @@ public final class MemoryKeyedCache: KeyedCache {
     }
 
     /// Sets a new value in the cache
-    public func set(_ entity: Encodable, forKey key: String) throws -> Future<Void> {
+    public func set<E>(_ entity: E, forKey key: String) throws -> Future<Void> where E: Encodable {
         storage[key] = entity
         return .done
     }
