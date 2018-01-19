@@ -30,7 +30,7 @@ extension Container {
     public func requestPooledConnection<Database>(
         to database: DatabaseIdentifier<Database>
     ) -> Future<Database.Connection> {
-        return Future {
+        return Future.flatMap {
             /// request a connection from the pool
             return try self.requireConnectionPool(to: database).requestConnection()
         }
