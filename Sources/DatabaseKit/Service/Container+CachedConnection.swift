@@ -23,7 +23,7 @@ extension Container {
 
             let conn = self.requestConnection(to: database).map(to: Database.Connection.self) { conn in
                 /// first get a pointer to the pool
-                let pool = try self.requireConnectionPool(to: database)
+                let pool = try self.connectionPool(to: database)
 
                 /// then create an active connection that knows how to
                 /// release itself

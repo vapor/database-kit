@@ -32,7 +32,7 @@ extension Container {
     ) -> Future<Database.Connection> {
         return Future.flatMap {
             /// request a connection from the pool
-            return try self.requireConnectionPool(to: database).requestConnection()
+            return try self.connectionPool(to: database).requestConnection()
         }
     }
 
@@ -43,15 +43,16 @@ extension Container {
     ) throws {
         /// this is the first attempt to connect to this
         /// db for this request
-        try requireConnectionPool(to: database).releaseConnection(conn)
+        try connectionPool(to: database).releaseConnection(conn)
     }
 }
 
 /// MARK: Internal
 
 extension Container {
-    /// Require a connection, throwing an error if none is found.
-    internal func requireConnectionPool<Database>(
+    /// Creates a `DatabaseConnectionPool` for the supplied Database identifier.
+    /// Subsequent calls to this method will always return the same pool.
+    public func connectionPool<Database>(
         to database: DatabaseIdentifier<Database>
     ) throws -> DatabaseConnectionPool<Database> {
         let cache = try self.make(DatabaseConnectionPoolCache.self, for: Database.self)
