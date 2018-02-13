@@ -48,6 +48,7 @@ extension SQLSerializer {
         return sql.joined(separator: " ")
     }
 
+    /// See SQLSerializer.serialize(foreignKey:)
     public func serialize(foreignKey: SchemaForeignKey) -> String {
         // FOREIGN KEY(trackartist) REFERENCES artist(artistid)
         var sql: [String] = []
@@ -66,6 +67,27 @@ extension SQLSerializer {
         }
         sql.append("(" + makeEscapedString(from: foreignKey.foreign.name) + ")")
 
+        if let onUpdate = foreignKey.onUpdate {
+            sql.append("ON UPDATE")
+            sql.append(serialize(foreignKeyAction: onUpdate))
+        }
+
+        if let onDelete = foreignKey.onDelete {
+            sql.append("ON DELETE")
+            sql.append(serialize(foreignKeyAction: onDelete))
+        }
+
         return sql.joined(separator: " ")
+    }
+
+    /// See SQLSerializer.serialize(foreignKeyAction:)
+    public func serialize(foreignKeyAction: SchemaForeignKeyAction) -> String {
+        switch foreignKeyAction {
+        case .noAction: return "NO ACTION"
+        case .restrict: return "RESTRICT"
+        case .setNull: return "SET NULL"
+        case .setDefault: return "SET DEFAULT"
+        case .cascade: return "CASCADE"
+        }
     }
 }
