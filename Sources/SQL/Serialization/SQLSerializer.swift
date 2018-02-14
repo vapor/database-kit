@@ -104,9 +104,15 @@ public protocol SQLSerializer {
 
     /// Serializes a SQL `SchemaColumn` to a string.
     ///
-    ///     FOREIGN KEY (`trackartist`) REFERENCES `artist`(`artistid`)
+    ///     FOREIGN KEY (`trackartist`) REFERENCES `artist`(`artistid`) ON UPDATE RESTRICT ON DELETE RESTRICT
     ///
     func serialize(foreignKey: SchemaForeignKey) -> String
+
+    /// Serializes a SQL `SchemaForeignKeyAction` to a string.
+    ///
+    ///     ON UPDATE RESTRICT ON DELETE RESTRICT
+    ///
+    func serialize(foreignKeyAction: SchemaForeignKeyAction) -> String
 
     // MARK: Utility
 
