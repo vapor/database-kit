@@ -25,9 +25,10 @@ public final class DatabaseKitProvider: Provider {
         }
 
         services.register(isSingleton: true) { worker -> DatabaseConnectionPoolCache in
+            let config = try worker.make(DatabaseConnectionPoolConfig.self, for: DatabaseConnectionPoolCache.self)
             return try DatabaseConnectionPoolCache(
                 databases: worker.make(for: DatabaseConnectionPoolCache.self),
-                maxConnections: 2, // make this configurable
+                maxConnections: config.maxConnections,
                 on: worker.eventLoop
             )
         }
@@ -35,6 +36,8 @@ public final class DatabaseKitProvider: Provider {
         services.register(isSingleton: true) { worker -> ActiveDatabaseConnectionCache in
             return ActiveDatabaseConnectionCache()
         }
+
+        services.register(DatabaseConnectionPoolConfig.self)
     }
 
     /// See Provider.boot
