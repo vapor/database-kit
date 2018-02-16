@@ -44,7 +44,11 @@ extension SubContainer {
         let conns = connections.cache
         connections.cache = [:]
         for (_, conn) in conns {
-            conn.release!()
+            guard let release = conn.release else {
+                ERROR("Release callback not set.")
+                continue
+            }
+            release()
         }
     }
 }
