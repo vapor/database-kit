@@ -2,24 +2,24 @@ public struct SchemaQuery {
     public var statement: SchemaStatement
     public var table: String
     public var addColumns: [SchemaColumn]
-    public var deleteColumns: [String]
+    public var removeColumns: [String]
     public var addForeignKeys: [SchemaForeignKey]
-    public var deleteForeignKeys: [String]
+    public var removeForeignKeys: [String]
 
     public init(
         statement: SchemaStatement,
         table: String,
         addColumns: [SchemaColumn],
-        deleteColumns: [String],
+        removeColumns: [String],
         addForeignKeys: [SchemaForeignKey],
-        deleteForeignKeys: [String]
+        removeForeignKeys: [String]
     ) {
         self.statement = statement
         self.table = table
         self.addColumns = addColumns
+        self.removeColumns = removeColumns
         self.addForeignKeys = addForeignKeys
-        self.deleteColumns = deleteColumns
-        self.deleteForeignKeys = deleteForeignKeys
+        self.removeForeignKeys = removeForeignKeys
     }
 
     public static func create(
@@ -31,29 +31,37 @@ public struct SchemaQuery {
             statement: .create,
             table: table,
             addColumns: columns,
-            deleteColumns: [],
+            removeColumns: [],
             addForeignKeys: foreignKeys,
-            deleteForeignKeys: []
+            removeForeignKeys: []
         )
     }
 
     public static func alter(
         table: String,
-        columns: [SchemaColumn],
-        deleteColumns: [String],
-        deleteForeignKeys: [String]
+        addColumns: [SchemaColumn],
+        removeColumns: [String],
+        addForeignKeys: [SchemaForeignKey],
+        removeForeignKeys: [String]
     ) -> SchemaQuery {
         return .init(
             statement: .alter,
             table: table,
-            addColumns: columns,
-            deleteColumns: deleteColumns,
-            addForeignKeys: [],
-            deleteForeignKeys: deleteForeignKeys
+            addColumns: addColumns,
+            removeColumns: removeColumns,
+            addForeignKeys: addForeignKeys,
+            removeForeignKeys: removeForeignKeys
         )
     }
 
     public static func drop(table: String) -> SchemaQuery {
-        return SchemaQuery(statement: .drop, table: table, addColumns: [], deleteColumns: [], addForeignKeys: [], deleteForeignKeys: [])
+        return SchemaQuery(
+            statement: .drop,
+            table: table,
+            addColumns: [],
+            removeColumns: [],
+            addForeignKeys: [],
+            removeForeignKeys: []
+        )
     }
 }
