@@ -33,7 +33,7 @@ internal final class DatabaseConnectionPoolCache: Service {
             return existing
         } else {
             guard let database = databases.database(for: id) else {
-                throw DatabaseKitError(identifier: "requestPool", reason: "No database with id `\(id)` is configured.")
+                throw DatabaseKitError(identifier: "requestPool", reason: "No database with id `\(id)` is configured.", source: .capture())
             }
 
             let new = database.makeConnectionPool(
