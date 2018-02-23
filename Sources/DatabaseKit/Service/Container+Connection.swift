@@ -33,13 +33,10 @@ extension Container {
             let databases = try self.make(Databases.self, for: Self.self)
 
             guard let db = databases.database(for: database) else {
-                fatalError("No database with id `\(database.uid)` is configured.")
+                throw DatabaseKitError(identifier: "requestConnection", reason: "No database with id `\(database.uid)` is configured.", source: .capture())
             }
 
-            return try db.makeConnection(
-                using: self.make(for: Database.Connection.self),
-                on: self
-            )
+            return db.makeConnection(on: self)
         }
     }
 

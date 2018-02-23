@@ -10,9 +10,6 @@ public final class DatabaseConnectionPool<Database> where Database: DatabaseKit.
     /// The Worker for this pool
     public let eventLoop: EventLoop
 
-    /// The configuration to be used for connections in this pool
-    public let config: Database.Connection.Config
-
     /// The maximum number of connections this pool should hold.
     public let max: UInt
 
@@ -29,12 +26,10 @@ public final class DatabaseConnectionPool<Database> where Database: DatabaseKit.
     public init(
         max: UInt,
         database: Database,
-        using config: Database.Connection.Config,
         on worker: Worker
     ) {
         self.database = database
         self.eventLoop = worker.eventLoop
-        self.config = config
         self.max = max
         self.active = 0
         self.available = []
@@ -48,11 +43,11 @@ public final class DatabaseConnectionPool<Database> where Database: DatabaseKit.
         if let ready = self.available.popLast() {
             promise.complete(ready)
         } else if self.active < self.max {
-            self.database.makeConnection(using: config, on: eventLoop).do { connection in
+            self.database.makeConnection(on: eventLoop).do { connection in
                 self.active += 1
                 promise.complete(connection)
-                }.catch { err in
-                    promise.fail(err)
+            }.catch { err in
+                promise.fail(err)
             }
         } else {
             self.waiters.append(promise.complete)

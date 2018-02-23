@@ -10,7 +10,7 @@ public final class DatabaseKitProvider: Provider {
 
     /// See Provider.register
     public func register(_ services: inout Services) throws {
-        services.register(isSingleton: true) { container -> Databases in
+        services.register { container -> Databases in
             let config = try container.make(DatabaseConfig.self, for: DatabaseKitProvider.self)
             var databases: [String: Any] = [:]
             for (id, lazyDatabase) in config.databases {
@@ -24,18 +24,20 @@ public final class DatabaseKitProvider: Provider {
             return Databases(databases)
         }
 
-        services.register(isSingleton: true) { worker -> DatabaseConnectionPoolCache in
-            let container = worker as! SubContainer // must be subcontainer, or we will create a cycle
+        services.register { worker -> DatabaseConnectionPoolCache in
+            let config = try worker.make(DatabaseConnectionPoolConfig.self, for: DatabaseConnectionPoolCache.self)
             return try DatabaseConnectionPoolCache(
                 databases: worker.make(for: DatabaseConnectionPoolCache.self),
-                on: container.superContainer,
-                maxConnections: 2 // make this configurable
+                maxConnections: config.maxConnections,
+                on: worker.eventLoop
             )
         }
 
-        services.register(isSingleton: true) { worker -> ActiveDatabaseConnectionCache in
+        services.register { worker -> ActiveDatabaseConnectionCache in
             return ActiveDatabaseConnectionCache()
         }
+
+        services.register(DatabaseConnectionPoolConfig.self)
     }
 
     /// See Provider.boot
