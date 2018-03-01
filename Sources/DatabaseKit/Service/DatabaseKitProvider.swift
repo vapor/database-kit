@@ -29,7 +29,7 @@ public final class DatabaseKitProvider: Provider {
             return try DatabaseConnectionPoolCache(
                 databases: worker.make(for: DatabaseConnectionPoolCache.self),
                 maxConnections: config.maxConnections,
-                on: worker.eventLoop
+                on: worker
             )
         }
 

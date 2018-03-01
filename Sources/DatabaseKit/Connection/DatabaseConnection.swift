@@ -10,11 +10,16 @@ public protocol DatabaseConnection: DatabaseConnectable {
 
 extension DatabaseConnection {
     /// See `DatabaseConnectable.connect(to:)`
-    public func connect<D>(to database: DatabaseIdentifier<D>?) -> Future<D.Connection> {
-        guard let conn = self as? D.Connection else {
-            let error = DatabaseKitError(identifier: "connectable", reason: "Unexpected \(#function): \(self) not \(D.Connection.self)", source: .capture())
-            return Future(error: error)
+    public func connect<D>(to database: DatabaseIdentifier<D>?, on worker: Worker) -> Future<D.Connection> {
+        return Future.map(on: worker) {
+            guard let conn = self as? D.Connection else {
+                throw DatabaseKitError(
+                    identifier: "connectable",
+                    reason: "Unexpected \(#function): \(self) not \(D.Connection.self)",
+                    source: .capture()
+                )
+            }
+            return conn
         }
-        return Future(conn)
     }
 }

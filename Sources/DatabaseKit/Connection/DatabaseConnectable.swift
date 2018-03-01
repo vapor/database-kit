@@ -7,5 +7,5 @@ public protocol DatabaseConnectable {
     ///
     /// If the database id is nil, any connection for this database
     /// type can be used.
-    func connect<D>(to database: DatabaseIdentifier<D>?) -> Future<D.Connection>
+    func connect<D>(to database: DatabaseIdentifier<D>?, on worker: Worker) -> Future<D.Connection>
 }

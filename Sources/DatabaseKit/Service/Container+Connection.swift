@@ -29,7 +29,7 @@ extension Container {
     public func requestConnection<Database>(
         to database: DatabaseIdentifier<Database>
     ) -> Future<Database.Connection> {
-        return Future.flatMap {
+        return Future.flatMap(on: self) {
             let databases = try self.make(Databases.self, for: Self.self)
 
             guard let db = databases.database(for: database) else {

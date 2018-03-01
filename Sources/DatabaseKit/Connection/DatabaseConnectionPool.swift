@@ -38,22 +38,22 @@ public final class DatabaseConnectionPool<Database> where Database: DatabaseKit.
 
     /// Request a connection from this queue pool.
     public func requestConnection() -> Future<Database.Connection> {
-        let promise = Promise(Database.Connection.self)
+        let promise = eventLoop.newPromise(Database.Connection.self)
 
         if let ready = self.available.popLast() {
-            promise.complete(ready)
+            promise.succeed(result: ready)
         } else if self.active < self.max {
-            self.database.makeConnection(on: eventLoop).do { connection in
+            self.database.makeConnection(on: wrap(eventLoop)).do { connection in
                 self.active += 1
-                promise.complete(connection)
+                promise.succeed(result: connection)
             }.catch { err in
-                promise.fail(err)
+                promise.fail(error: err)
             }
         } else {
-            self.waiters.append(promise.complete)
+            self.waiters.append(promise.succeed)
         }
 
-        return promise.future
+        return promise.futureResult
     }
 
     /// Release a connection back to the queue pool.
