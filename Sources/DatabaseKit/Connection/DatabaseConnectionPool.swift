@@ -43,7 +43,7 @@ public final class DatabaseConnectionPool<Database> where Database: DatabaseKit.
         if let ready = self.available.popLast() {
             promise.succeed(result: ready)
         } else if self.active < self.max {
-            self.database.makeConnection(on: wrap(eventLoop)).do { connection in
+            self.database.makeConnection(on: eventLoop).do { connection in
                 self.active += 1
                 promise.succeed(result: connection)
             }.catch { err in

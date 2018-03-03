@@ -38,7 +38,7 @@ internal final class DatabaseConnectionPoolCache: Service {
 
             let new = database.makeConnectionPool(
                 max: maxConnections,
-                on: wrap(eventLoop)
+                on: eventLoop
             )
             cache[id.uid] = new
             return new
