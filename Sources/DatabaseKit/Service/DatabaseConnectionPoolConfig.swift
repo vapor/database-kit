@@ -1,7 +1,7 @@
 import Service
 
 /// Configure the database connection pools.
-struct DatabaseConnectionPoolConfig: ServiceType {
+public struct DatabaseConnectionPoolConfig: ServiceType {
     /// Maximum number of connections per pool.
     ///
     /// There will normally be multiple connection pools in your application,
@@ -23,7 +23,7 @@ struct DatabaseConnectionPoolConfig: ServiceType {
     }
 
     /// See `ServiceType.makeService(for:)`
-    static func makeService(for worker: Container) throws -> DatabaseConnectionPoolConfig {
+    public static func makeService(for worker: Container) throws -> DatabaseConnectionPoolConfig {
         return .default()
     }
 }
