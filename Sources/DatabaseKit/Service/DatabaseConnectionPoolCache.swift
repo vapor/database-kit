@@ -1,3 +1,4 @@
+import Async
 import Service
 
 /// Caches database connection pools.
@@ -10,16 +11,16 @@ internal final class DatabaseConnectionPoolCache: Service {
     private var cache: [String: Any]
 
     /// The container to use.
-    private let container: Container
+    private let eventLoop: EventLoop
 
     /// Maximum connections.
     private let maxConnections: UInt
 
     /// Creates a new connection pool cache for the supplied
     /// databases using a given container.
-    internal init(databases: Databases, on container: Container, maxConnections: UInt) {
+    internal init(databases: Databases, maxConnections: UInt, on worker: Worker) {
         self.databases = databases
-        self.container = container
+        self.eventLoop = worker.eventLoop
         self.maxConnections = maxConnections
         self.cache = [:]
     }
@@ -32,13 +33,12 @@ internal final class DatabaseConnectionPoolCache: Service {
             return existing
         } else {
             guard let database = databases.database(for: id) else {
-                fatalError("no database")
+                throw DatabaseKitError(identifier: "requestPool", reason: "No database with id `\(id)` is configured.", source: .capture())
             }
 
-            let new = try database.makeConnectionPool(
+            let new = database.makeConnectionPool(
                 max: maxConnections,
-                using: container.make(for: D.Connection.self),
-                on: container
+                on: eventLoop
             )
             cache[id.uid] = new
             return new

@@ -11,20 +11,13 @@ public protocol Database {
 
     /// Creates a new database connection that will
     /// execute callbacks on the supplied dispatch queue.
-    func makeConnection(
-        using config: Connection.Config,
-        on worker: Worker
-    ) -> Future<Connection>
+    func makeConnection(on worker: Worker) -> Future<Connection>
 }
 
 extension Database {
     /// Create a fluent connection pool for this database.
-    public func makeConnectionPool(
-        max: UInt,
-        using config: Connection.Config,
-        on worker: Worker
-    ) -> DatabaseConnectionPool<Self> {
-        return DatabaseConnectionPool(max: max, database: self, using: config, on: worker)
+    public func makeConnectionPool(max: UInt, on worker: Worker) -> DatabaseConnectionPool<Self> {
+        return DatabaseConnectionPool(max: max, database: self, on: worker)
     }
 }
 
