@@ -10,8 +10,8 @@ public protocol DatabaseConnection: DatabaseConnectable {
 
 extension DatabaseConnection {
     /// See `DatabaseConnectable.connect(to:)`
-    public func connect<D>(to database: DatabaseIdentifier<D>?, on worker: Worker) -> Future<D.Connection> {
-        return Future.map(on: worker) {
+    public func connect<D>(to database: DatabaseIdentifier<D>?) -> Future<D.Connection> {
+        return Future.map(on: self) {
             guard let conn = self as? D.Connection else {
                 throw DatabaseKitError(
                     identifier: "connectable",
