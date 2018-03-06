@@ -85,7 +85,7 @@ public struct DataGroupBy {
         self.column = column
     }
     
-    init(custom: String) {
+    public init(custom: String) {
         self.custom = custom
     }
 }

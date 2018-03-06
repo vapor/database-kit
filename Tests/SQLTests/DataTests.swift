@@ -33,7 +33,7 @@ final class DataTests: XCTestCase {
         )
     }
 
-    func testSelectWithGroupBy() {
+    func testSelectWithGroupByColumn() {
         var select = DataQuery(statement: .select, table: "foo")
         
         select.groupBy = DataGroupBy(column: DataColumn(table: "foo", name: "name"))
@@ -41,6 +41,17 @@ final class DataTests: XCTestCase {
         XCTAssertEqual(
             GeneralSQLSerializer.shared.serialize(data: select),
             "SELECT `foo`.* FROM `foo` GROUP BY `foo`.`name`"
+        )
+    }
+    
+    func testSelectWithCustomGroupBy() {
+        var select = DataQuery(statement: .select, table: "foo")
+        
+        select.groupBy = DataGroupBy(custom: "YEAR(`foo`.`date`)")
+        
+        XCTAssertEqual(
+            GeneralSQLSerializer.shared.serialize(data: select),
+            "SELECT `foo`.* FROM `foo` GROUP BY YEAR(`foo`.`date`)"
         )
     }
     
