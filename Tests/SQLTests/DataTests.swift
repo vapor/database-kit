@@ -33,6 +33,17 @@ final class DataTests: XCTestCase {
         )
     }
 
+    func testSelectWithGroupBy() {
+        var select = DataQuery(statement: .select, table: "foo")
+        
+        select.groupBy = DataGroupBy(column: DataColumn(table: "foo", name: "name"))
+        
+        XCTAssertEqual(
+            GeneralSQLSerializer.shared.serialize(data: select),
+            "SELECT `foo`.* FROM `foo` GROUP BY `foo`.`name`"
+        )
+    }
+    
     func testSelectWithJoins() {
         var select = DataQuery(statement: .select, table: "foo")
 
