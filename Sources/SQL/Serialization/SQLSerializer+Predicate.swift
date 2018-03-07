@@ -48,11 +48,15 @@ extension SQLSerializer {
             let sub = serialize(data: subquery)
             statement.append("(" + sub + ")")
         case .placeholders(let length):
-            var placeholders: [String] = []
-            for _ in 0..<length {
-                placeholders.append(makePlaceholder(predicate: predicate))
+            if length == 1 {
+                statement.append(makePlaceholder(predicate: predicate))
+            } else {
+                var placeholders: [String] = []
+                for _ in 0..<length {
+                    placeholders.append(makePlaceholder(predicate: predicate))
+                }
+                statement.append("(" + placeholders.joined(separator: ", ") + ")")
             }
-            statement.append("(" + placeholders.joined(separator: ", ") + ")")
         case .custom(let string): statement.append(string)
         case .none: break
         }
