@@ -21,6 +21,9 @@ public struct DataQuery {
     /// List of columns to order by.
     public var orderBys: [DataOrderBy]
 
+    /// GROUP BY YEAR(date)
+    public var groupBys: [DataGroupBy]
+
     /// Optional query limit. If set, result count must be less than the limit provided.
     public var limit: Int?
 
@@ -40,6 +43,7 @@ public struct DataQuery {
         joins: [DataJoin] = [],
         predicates: [DataPredicateItem] = [],
         orderBys: [DataOrderBy] = [],
+        groupBy: [DataGroupBy] = [],
         limit: Int? = nil,
         offset: Int? = nil,
         distinct: Bool? = nil
@@ -51,7 +55,13 @@ public struct DataQuery {
         self.joins = joins
         self.predicates = predicates
         self.orderBys = orderBys
+        self.groupBys = groupBy
         self.limit = limit
         self.offset = offset
     }
+}
+
+public enum DataGroupBy {
+    case column(DataColumn)
+    case custom(String)
 }
