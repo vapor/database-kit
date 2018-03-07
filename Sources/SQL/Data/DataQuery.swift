@@ -27,6 +27,10 @@ public struct DataQuery {
     /// Optional query offset. If set, results will be offset by the number provided.
     public var offset: Int?
 
+    /// If set, and `true`, only unique rows with unique values
+    /// should be returned by this query.
+    public var distinct: Bool?
+
     /// Creates a new `DataQuery`
     public init(
         statement: DataStatement,
@@ -37,7 +41,8 @@ public struct DataQuery {
         predicates: [DataPredicateItem] = [],
         orderBys: [DataOrderBy] = [],
         limit: Int? = nil,
-        offset: Int? = nil
+        offset: Int? = nil,
+        distinct: Bool? = nil
     ) {
         self.statement = statement
         self.table = table

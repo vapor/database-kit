@@ -20,6 +20,9 @@ extension SQLSerializer {
             statement.append("(" + placeholders.joined(separator: ", ") + ")")
         case .select:
             statement.append("SELECT")
+            if query.distinct == true {
+                statement.append("DISTINCT")
+            }
 
             var columns: [String] = []
 
