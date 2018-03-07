@@ -26,4 +26,6 @@ public enum DataPredicateComparison {
     case isNull
     /// IS NOT NULL
     case isNotNull
+    /// No comparison type
+    case none
 }

@@ -41,24 +41,30 @@ extension SQLSerializer {
 
         statement.append(serialize(comparison: predicate.comparison))
 
-        switch predicate.value {
-        case .column(let col):
-            statement.append(serialize(column: col))
-        case .subquery(let subquery):
-            let sub = serialize(data: subquery)
-            statement.append("(" + sub + ")")
-        case .placeholders(let length):
-            if length == 1 {
-                statement.append(makePlaceholder(predicate: predicate))
-            } else {
-                var placeholders: [String] = []
-                for _ in 0..<length {
-                    placeholders.append(makePlaceholder(predicate: predicate))
+        switch predicate.comparison {
+        case .isNotNull, .isNull:
+            // no values should follow IS NULL / IS NOT NULL
+            break
+        default:
+            switch predicate.value {
+            case .column(let col):
+                statement.append(serialize(column: col))
+            case .subquery(let subquery):
+                let sub = serialize(data: subquery)
+                statement.append("(" + sub + ")")
+            case .placeholders(let length):
+                if length == 1 {
+                    statement.append(makePlaceholder(predicate: predicate))
+                } else {
+                    var placeholders: [String] = []
+                    for _ in 0..<length {
+                        placeholders.append(makePlaceholder(predicate: predicate))
+                    }
+                    statement.append("(" + placeholders.joined(separator: ", ") + ")")
                 }
-                statement.append("(" + placeholders.joined(separator: ", ") + ")")
+            case .custom(let string): statement.append(string)
+            case .none: break
             }
-        case .custom(let string): statement.append(string)
-        case .none: break
         }
 
         return statement.joined(separator: " ")
@@ -96,6 +102,7 @@ extension SQLSerializer {
         case .notLike: return "NOT LIKE"
         case .isNull: return "IS NULL"
         case .isNotNull: return "IS NOT NULL"
+        case .none: return ""
         }
     }
 }
