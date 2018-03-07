@@ -11,6 +11,7 @@ extension SQLSerializer {
         switch predicateGroupRelation {
         case .and: return "AND"
         case .or: return "OR"
+        case .custom(let string): return string
         }
     }
 
@@ -46,16 +47,14 @@ extension SQLSerializer {
         case .subquery(let subquery):
             let sub = serialize(data: subquery)
             statement.append("(" + sub + ")")
-        case .placeholder:
-            statement.append(makePlaceholder(predicate: predicate))
-        case .placeholderArray(let length):
+        case .placeholders(let length):
             var placeholders: [String] = []
             for _ in 0..<length {
                 placeholders.append(makePlaceholder(predicate: predicate))
             }
             statement.append("(" + placeholders.joined(separator: ", ") + ")")
-        case .none:
-            break
+        case .custom(let string): statement.append(string)
+        case .none: break
         }
 
         return statement.joined(separator: " ")
