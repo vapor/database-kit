@@ -22,11 +22,7 @@ public struct SchemaQuery {
         self.removeForeignKeys = removeForeignKeys
     }
 
-    public static func create(
-        table: String,
-        columns: [SchemaColumn],
-        foreignKeys: [SchemaForeignKey]
-    ) -> SchemaQuery {
+    public static func create(table: String, columns: [SchemaColumn], foreignKeys: [SchemaForeignKey]) -> SchemaQuery {
         return .init(
             statement: .create,
             table: table,

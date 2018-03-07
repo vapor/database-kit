@@ -6,7 +6,7 @@ final class DataTests: XCTestCase {
         let select = DataQuery(statement: .select, table: "foo")
         XCTAssertEqual(
             GeneralSQLSerializer.shared.serialize(data: select),
-            "SELECT `foo`.* FROM `foo`"
+            "SELECT * FROM `foo`"
         )
     }
 
@@ -29,7 +29,7 @@ final class DataTests: XCTestCase {
 
         XCTAssertEqual(
             GeneralSQLSerializer.shared.serialize(data: select),
-            "SELECT `foo`.* FROM `foo` WHERE (`id` = ? AND `foo`.`name` = ?)"
+            "SELECT * FROM `foo` WHERE (`id` = ? AND `foo`.`name` = ?)"
         )
     }
 
@@ -45,7 +45,7 @@ final class DataTests: XCTestCase {
 
         XCTAssertEqual(
             GeneralSQLSerializer.shared.serialize(data: select),
-            "SELECT `foo`.* FROM `foo` JOIN `bar` ON `foo`.`id` = `bar`.`foo_id`"
+            "SELECT * FROM `foo` JOIN `bar` ON `foo`.`id` = `bar`.`foo_id`"
         )
     }
 

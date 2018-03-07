@@ -21,12 +21,11 @@ extension SQLSerializer {
     }
 
     /// See SQLSerializer.serialize(orderByDirection:)
-    public func serialize(orderByDirection: OrderByDirection) -> String {
+    public func serialize(orderByDirection: DataOrderByDirection) -> String {
         switch orderByDirection {
-        case .ascending:
-            return "ASC"
-        case .descending:
-            return "DESC"
+        case .ascending: return "ASC"
+        case .descending: return "DESC"
+        case .custom(let string): return string
         }
     }
 }

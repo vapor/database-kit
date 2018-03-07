@@ -1,15 +1,31 @@
+/// All suported SQL `DataPredicate` comparisons.
 public enum DataPredicateComparison {
+    /// =
     case equal
+    /// !=, <>
     case notEqual
+    /// <
     case lessThan
+    /// >
     case greaterThan
+    /// <=
     case lessThanOrEqual
+    /// >=
     case greaterThanOrEqual
+    /// IN
     case `in`
+    /// NOT IN
     case notIn
+    /// BETWEEN
     case between
+    /// LIKE
     case like
+    /// NOT LIKE
     case notLike
-    case null
-    case notNull
+    /// IS NULL
+    case isNull
+    /// IS NOT NULL
+    case isNotNull
+    /// No comparison type
+    case none
 }
