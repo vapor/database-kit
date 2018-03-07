@@ -90,8 +90,8 @@ extension SQLSerializer {
         case .between: return "BETWEEN"
         case .like: return "LIKE"
         case .notLike: return "NOT LIKE"
-        case .null: return "IS NULL"
-        case .notNull: return "IS NOT NULL"
+        case .isNull: return "IS NULL"
+        case .isNotNull: return "IS NOT NULL"
         }
     }
 }

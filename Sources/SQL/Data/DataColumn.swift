@@ -16,3 +16,10 @@ public struct DataColumn {
         self.key = key
     }
 }
+
+extension DataColumn: ExpressibleByStringLiteral {
+    /// See `ExpressibleByStringLiteral.init(stringLiteral:)`
+    public init(stringLiteral value: String) {
+        self.init(name: value)
+    }
+}

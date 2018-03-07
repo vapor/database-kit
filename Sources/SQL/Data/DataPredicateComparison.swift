@@ -23,7 +23,7 @@ public enum DataPredicateComparison {
     /// NOT LIKE
     case notLike
     /// IS NULL
-    case null
+    case isNull
     /// IS NOT NULL
-    case notNull
+    case isNotNull
 }
