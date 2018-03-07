@@ -51,6 +51,12 @@ public protocol SQLSerializer {
     ///     `users`.`age` DESC
     ///
     func serialize(orderBy: DataOrderBy) -> String
+    
+    /// Serializes multiple SQL `DataGroupBy`s to a string.
+    ///
+    ///     GROUP BY YEAR(`users`.`born`), `users`.`sex`
+    ///
+    func serialize(groupBys: [DataGroupBy]) -> String
 
     /// Serializes a SQL `OrderByDirection` to a string.
     ///
