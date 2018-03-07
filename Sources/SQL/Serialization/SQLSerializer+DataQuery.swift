@@ -61,13 +61,8 @@ extension SQLSerializer {
             statement.append(serialize(orderBys: query.orderBys))
         }
 
-        if let groupBy = query.groupBy, (groupBy.column != nil || groupBy.custom != nil) {
-            if let column = groupBy.column {
-                statement.append("GROUP BY \(serialize(column: column))")
-            }
-            if let custom = groupBy.custom {
-                statement.append("GROUP BY \(custom)")
-            }
+        if !query.groupBys.isEmpty {
+            statement.append(serialize(groupBys: query.groupBys))
         }
         
         if let limit = query.limit {
