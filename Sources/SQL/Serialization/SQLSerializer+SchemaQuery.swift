@@ -11,7 +11,6 @@ extension SQLSerializer {
 
             let columns = query.addColumns.map { serialize(column: $0) }
                 + query.addForeignKeys.map { serialize(foreignKey: $0) }
-                + query.addForeignKeys.map { serialize(foreignKey: $0) }
             statement.append("(" + columns.joined(separator: ", ") + ")")
         case .alter:
             statement.append("ALTER TABLE")
