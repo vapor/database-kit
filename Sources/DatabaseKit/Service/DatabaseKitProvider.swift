@@ -11,7 +11,7 @@ public final class DatabaseKitProvider: Provider {
     /// See Provider.register
     public func register(_ services: inout Services) throws {
         services.register { container -> Databases in
-            let config = try container.make(DatabaseConfig.self, for: DatabaseKitProvider.self)
+            let config = try container.make(DatabaseConfig.self)
             var databases: [String: Any] = [:]
             for (id, lazyDatabase) in config.databases {
                 let db = try lazyDatabase(container)
@@ -25,9 +25,9 @@ public final class DatabaseKitProvider: Provider {
         }
 
         services.register { worker -> DatabaseConnectionPoolCache in
-            let config = try worker.make(DatabaseConnectionPoolConfig.self, for: DatabaseConnectionPoolCache.self)
+            let config = try worker.make(DatabaseConnectionPoolConfig.self)
             return try DatabaseConnectionPoolCache(
-                databases: worker.make(for: DatabaseConnectionPoolCache.self),
+                databases: worker.make(),
                 maxConnections: config.maxConnections,
                 on: worker
             )

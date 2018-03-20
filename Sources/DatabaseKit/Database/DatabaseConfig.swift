@@ -33,7 +33,7 @@ public struct DatabaseConfig: Service {
         database: D.Type,
         as id: DatabaseIdentifier<D>
     ) {
-        databases[id.uid] = { try $0.make(D.self, for: DatabaseConfig.self) }
+        databases[id.uid] = { try $0.make(D.self) }
     }
 
     /// Adds a lazy-initialized database to the config.

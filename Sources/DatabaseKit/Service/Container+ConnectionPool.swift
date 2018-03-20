@@ -55,7 +55,7 @@ extension Container {
     public func connectionPool<Database>(
         to database: DatabaseIdentifier<Database>
     ) throws -> DatabaseConnectionPool<Database> {
-        let cache = try self.make(DatabaseConnectionPoolCache.self, for: Database.self)
+        let cache = try self.make(DatabaseConnectionPoolCache.self)
         return try cache.pool(for: database)
     }
 }
