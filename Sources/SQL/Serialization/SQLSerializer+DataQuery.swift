@@ -20,6 +20,9 @@ extension SQLSerializer {
             statement.append("(" + placeholders.joined(separator: ", ") + ")")
         case .select:
             statement.append("SELECT")
+            if query.distinct == true {
+                statement.append("DISTINCT")
+            }
 
             var columns: [String] = []
 
@@ -28,7 +31,7 @@ extension SQLSerializer {
             }
 
             if columns.isEmpty {
-                columns += ["\(table).*"]
+                columns += ["*"] // ["\(table).*"]
             } else {
                 columns += query.columns.map { serialize(column: $0) }
             }

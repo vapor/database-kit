@@ -1,16 +1,40 @@
 /// SQL data manipulation query (DML)
 public struct DataQuery {
+    /// The statement type, SELECT, INSERT, etc.
     public var statement: DataStatement
+
+    /// The table to query.
     public var table: String
+
+    /// List of columns to fetch.
     public var columns: [DataColumn]
+
+    /// List of computed columns to fetch.
     public var computed: [DataComputed]
+
+    /// List of joins to execute.
     public var joins: [DataJoin]
+
+    /// List of predicates to filter by.
     public var predicates: [DataPredicateItem]
+
+    /// List of columns to order by.
     public var orderBys: [DataOrderBy]
+
+    /// GROUP BY YEAR(date)
     public var groupBys: [DataGroupBy]
+
+    /// Optional query limit. If set, result count must be less than the limit provided.
     public var limit: Int?
+
+    /// Optional query offset. If set, results will be offset by the number provided.
     public var offset: Int?
 
+    /// If set, and `true`, only unique rows with unique values
+    /// should be returned by this query.
+    public var distinct: Bool?
+
+    /// Creates a new `DataQuery`
     public init(
         statement: DataStatement,
         table: String,
@@ -21,7 +45,8 @@ public struct DataQuery {
         orderBys: [DataOrderBy] = [],
         groupBy: [DataGroupBy] = [],
         limit: Int? = nil,
-        offset: Int? = nil
+        offset: Int? = nil,
+        distinct: Bool? = nil
     ) {
         self.statement = statement
         self.table = table
@@ -36,64 +61,7 @@ public struct DataQuery {
     }
 }
 
-public enum DataPredicateItem {
-    case group(DataPredicateGroup)
-    case predicate(DataPredicate)
-}
-
-public struct DataPredicateGroup {
-    public var relation: DataPredicateGroupRelation
-    public var predicates: [DataPredicateItem]
-
-    public init(
-        relation: DataPredicateGroupRelation,
-        predicates: [DataPredicateItem]
-    ) {
-        self.relation = relation
-        self.predicates = predicates
-    }
-}
-
-public enum DataPredicateGroupRelation {
-    case and
-    case or
-}
-
-public struct DataOrderBy {
-    public var columns: [DataColumn]
-    public var direction: OrderByDirection
-
-    public init(
-        columns: [DataColumn],
-        direction: OrderByDirection = .descending
-    ) {
-        self.columns = columns
-        self.direction = direction
-    }
-}
-
-public enum OrderByDirection {
-    case ascending
-    case descending
-}
-
 public enum DataGroupBy {
     case column(DataColumn)
     case custom(String)
-}
-
-public struct DataComputed {
-    public var function: String
-    public var columns: [DataColumn]
-    public var key: String?
-
-    public init(
-        function: String,
-        columns: [DataColumn] = [],
-        key: String? = nil
-    ) {
-        self.function = function
-        self.columns = columns
-        self.key = key
-    }
 }

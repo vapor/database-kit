@@ -62,7 +62,7 @@ public protocol SQLSerializer {
     ///
     ///     DESC
     ///
-    func serialize(orderByDirection: OrderByDirection) -> String
+    func serialize(orderByDirection: DataOrderByDirection) -> String
 
     /// Serializes a SQL `DataPredicateGroup` to a string.
     ///

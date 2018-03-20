@@ -2,7 +2,7 @@ import Async
 
 /// Capable of being represented as a database connection
 /// for the supplied identifier.
-public protocol DatabaseConnectable {
+public protocol DatabaseConnectable: Worker {
     /// Create a database connection for the supplied dbid.
     ///
     /// If the database id is nil, any connection for this database

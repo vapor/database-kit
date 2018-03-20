@@ -11,6 +11,7 @@ extension SQLSerializer {
         switch predicateGroupRelation {
         case .and: return "AND"
         case .or: return "OR"
+        case .custom(let string): return string
         }
     }
 
@@ -40,22 +41,30 @@ extension SQLSerializer {
 
         statement.append(serialize(comparison: predicate.comparison))
 
-        switch predicate.value {
-        case .column(let col):
-            statement.append(serialize(column: col))
-        case .subquery(let subquery):
-            let sub = serialize(data: subquery)
-            statement.append("(" + sub + ")")
-        case .placeholder:
-            statement.append(makePlaceholder(predicate: predicate))
-        case .placeholderArray(let length):
-            var placeholders: [String] = []
-            for _ in 0..<length {
-                placeholders.append(makePlaceholder(predicate: predicate))
-            }
-            statement.append("(" + placeholders.joined(separator: ", ") + ")")
-        case .none:
+        switch predicate.comparison {
+        case .isNotNull, .isNull:
+            // no values should follow IS NULL / IS NOT NULL
             break
+        default:
+            switch predicate.value {
+            case .column(let col):
+                statement.append(serialize(column: col))
+            case .subquery(let subquery):
+                let sub = serialize(data: subquery)
+                statement.append("(" + sub + ")")
+            case .placeholders(let length):
+                if length == 1 {
+                    statement.append(makePlaceholder(predicate: predicate))
+                } else {
+                    var placeholders: [String] = []
+                    for _ in 0..<length {
+                        placeholders.append(makePlaceholder(predicate: predicate))
+                    }
+                    statement.append("(" + placeholders.joined(separator: ", ") + ")")
+                }
+            case .custom(let string): statement.append(string)
+            case .none: break
+            }
         }
 
         return statement.joined(separator: " ")
@@ -91,8 +100,9 @@ extension SQLSerializer {
         case .between: return "BETWEEN"
         case .like: return "LIKE"
         case .notLike: return "NOT LIKE"
-        case .null: return "IS NULL"
-        case .notNull: return "IS NOT NULL"
+        case .isNull: return "IS NULL"
+        case .isNotNull: return "IS NOT NULL"
+        case .none: return ""
         }
     }
 }

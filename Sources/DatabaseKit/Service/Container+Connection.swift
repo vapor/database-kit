@@ -29,8 +29,8 @@ extension Container {
     public func requestConnection<Database>(
         to database: DatabaseIdentifier<Database>
     ) -> Future<Database.Connection> {
-        return Future.flatMap {
-            let databases = try self.make(Databases.self, for: Self.self)
+        return Future.flatMap(on: self) {
+            let databases = try self.make(Databases.self)
 
             guard let db = databases.database(for: database) else {
                 throw DatabaseKitError(identifier: "requestConnection", reason: "No database with id `\(database.uid)` is configured.", source: .capture())
