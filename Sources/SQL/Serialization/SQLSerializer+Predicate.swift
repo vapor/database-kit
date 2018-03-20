@@ -103,6 +103,7 @@ extension SQLSerializer {
         case .isNull: return "IS NULL"
         case .isNotNull: return "IS NOT NULL"
         case .none: return ""
+        case .sql(let sql): return sql
         }
     }
 }

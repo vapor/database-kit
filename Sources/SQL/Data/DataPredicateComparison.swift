@@ -28,4 +28,6 @@ public enum DataPredicateComparison {
     case isNotNull
     /// No comparison type
     case none
+    /// Raw SQL string
+    case sql(String)
 }
