@@ -1,3 +1,4 @@
+import Async
 import Service
 
 /// Registers database kit services.
@@ -40,8 +41,8 @@ public final class DatabaseKitProvider: Provider {
         services.register(DatabaseConnectionPoolConfig.self)
     }
 
-    /// See Provider.boot
-    public func boot(_ worker: Container) throws {
-        //
+    /// See Provider.didBoot
+    public func didBoot(_ worker: Container) throws -> Future<Void> {
+        return .done(on: worker)
     }
 }
