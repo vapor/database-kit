@@ -1,5 +1,5 @@
 /// All suported SQL `DataPredicate` comparisons.
-public enum DataPredicateComparison {
+public enum DataPredicateComparison: Equatable {
     /// =
     case equal
     /// !=, <>
