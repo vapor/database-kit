@@ -10,6 +10,19 @@ final class DataTests: XCTestCase {
         )
     }
 
+    func testCustomColumnSelect() {
+        let select = DataQuery(statement: .select, table: "foo", columns: [
+            DataColumn(table: "foo", name: "d"),
+            DataColumn(table: "foo", name: "l")
+            ]
+        )
+        
+        XCTAssertEqual(
+            GeneralSQLSerializer.shared.serialize(data: select),
+            "SELECT `foo`.`d`, `foo`.`l` FROM `foo`"
+        )
+    }
+    
     func testSelectWithPredicates() {
         var select = DataQuery(statement: .select, table: "foo")
 

@@ -24,16 +24,14 @@ extension SQLSerializer {
                 statement.append("DISTINCT")
             }
 
-            var columns: [String] = []
+            var columns: [String] = query.columns.map { serialize(column: $0) }
 
             if !query.computed.isEmpty {
                 columns += query.computed.map { serialize(computed: $0) }
             }
 
             if columns.isEmpty {
-                columns += ["*"] // ["\(table).*"]
-            } else {
-                columns += query.columns.map { serialize(column: $0) }
+                columns += ["*"]
             }
 
             statement.append(columns.joined(separator: ", "))
