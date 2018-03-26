@@ -82,9 +82,25 @@ final class DataTests: XCTestCase {
         )
     }
 
+    func testSubsetEdgecases() {
+        var select = DataQuery(statement: .select, table: "foo")
+        select.predicates.append(.predicate(.init(column: "a", comparison: .notIn, value: .placeholders(count: 0))))
+        select.predicates.append(.predicate(.init(column: "b", comparison: .in, value: .placeholders(count: 0))))
+        select.predicates.append(.predicate(.init(column: "c", comparison: .notIn, value: .placeholders(count: 1))))
+        select.predicates.append(.predicate(.init(column: "d", comparison: .in, value: .placeholders(count: 1))))
+        select.predicates.append(.predicate(.init(column: "e", comparison: .notIn, value: .placeholders(count: 2))))
+        select.predicates.append(.predicate(.init(column: "f", comparison: .in, value: .placeholders(count: 2))))
+
+        XCTAssertEqual(
+            GeneralSQLSerializer.shared.serialize(data: select),
+            "SELECT * FROM `foo` WHERE (true AND false AND `c` != ? AND `d` = ? AND `e` NOT IN (?, ?) AND `f` IN (?, ?))"
+        )
+    }
+
     static let allTests = [
         ("testBasicSelectStar", testBasicSelectStar),
         ("testSelectWithPredicates", testSelectWithPredicates),
         ("testSelectWithJoins", testSelectWithJoins),
+        ("testSubsetEdgecases", testSubsetEdgecases),
     ]
 }
