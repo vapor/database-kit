@@ -1,6 +1,6 @@
 import Foundation
 
-protocol DatabaseConfigRepresentable {
+protocol DatabaseCredentials {
     var username: String? { get}
     var password: String? { get}
     var hostname: String? { get}
@@ -10,7 +10,7 @@ protocol DatabaseConfigRepresentable {
 }
 
 
-extension URL: DatabaseConfigRepresentable {
+extension URL: DatabaseCredentials {
     var database: String? {
         return path
     }
@@ -24,7 +24,7 @@ extension URL: DatabaseConfigRepresentable {
     }
 }
 
-extension String: DatabaseConfigRepresentable {
+extension String: DatabaseCredentials {
     var user: String? {
         return url?.user
     }
