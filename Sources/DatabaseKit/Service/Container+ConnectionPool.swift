@@ -16,6 +16,9 @@ extension Container {
             return try closure(conn).map(to: T.self) { res in
                 try self.releasePooledConnection(conn, to: database)
                 return res
+            }.catchMap { error in
+                try self.releasePooledConnection(conn, to: database)
+                throw error
             }
         }
     }
