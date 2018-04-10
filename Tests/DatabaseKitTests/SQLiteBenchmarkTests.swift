@@ -3,11 +3,11 @@ import DatabaseKit
 import XCTest
 
 final class DatabaseKitTests: XCTestCase {
-    func testExample() {
-        XCTAssert(true)
+    func testURLDatabaseName() {
+        XCTAssertEqual(URL(string: "/vapor_database/asdf")?.databaseName, "vapor_database")
     }
 
     static let allTests = [
-        ("testExample", testExample),
+        ("testURLDatabaseName", testURLDatabaseName),
     ]
 }
