@@ -1,6 +1,7 @@
 import Async
 import Dispatch
 
+
 /// Stores key-value pair in a dictionary thread-safely
 public final class MemoryKeyedCache: KeyedCache {
     /// The underlying storage of this cache
