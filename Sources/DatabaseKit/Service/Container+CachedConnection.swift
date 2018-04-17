@@ -2,7 +2,7 @@ import Async
 import Service
 
 /// Request / release cached database connections.
-extension SubContainer {
+extension Container {
     /// Returns a future connection to the supplied database.
     ///
     /// Subsequent calls to this method with the same database ID will
@@ -22,7 +22,7 @@ extension SubContainer {
             connections.cache[database.uid] = active
 
             /// first get a pointer to the pool
-            let pool = try self.superContainer.connectionPool(to: database)
+            let pool = try self.connectionPool(to: database)
             let conn = pool.requestConnection().map(to: Database.Connection.self) { conn in
                 /// then create an active connection that knows how to
                 /// release itself
