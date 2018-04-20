@@ -1,6 +1,3 @@
-import Async
-import Service
-
 /// Request / release cached database connections.
 extension Container {
     /// Returns a future connection to the supplied database.

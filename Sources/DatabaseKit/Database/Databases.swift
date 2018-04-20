@@ -1,5 +1,3 @@
-import Service
-
 /// Represents the databases currently configured for Fluent.
 public struct Databases: Service {
     /// Internal storage: [DatabaseIdentifier: Database]

@@ -32,7 +32,7 @@ extension Container {
         return Future.flatMap(on: self) {
             let databases = try self.make(Databases.self)
             guard let db = databases.database(for: database) else {
-                throw DatabaseKitError(identifier: "requestConnection", reason: "No database with id `\(database.uid)` is configured.", source: .capture())
+                throw DatabaseKitError(identifier: "requestConnection", reason: "No database with id '\(database.uid)' is configured.")
             }
             return db.newConnection(on: self)
         }

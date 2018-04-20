@@ -1,5 +1,3 @@
-import Service
-
 /// Represents an active connection.
 internal final class ActiveDatabaseConnection {
     /// Handles connection release

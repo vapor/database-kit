@@ -47,17 +47,20 @@ public final class DatabaseConnectionPool<Database> where Database: DatabaseKit.
 
             // check if it is still open
             if !active.connection.isClosed {
-                // connection is still open, we can give it directly to a waiter.
+                // connection is still open, we can return it directly
                 return eventLoop.newSucceededFuture(result: active.connection)
             } else {
+                // connection is closed, we need to replace it
                 return database.newConnection(on: eventLoop).map { newConn in
                     // replace the connection with a new one
+                    // this should cause the old connection to deinit now that
+                    // there are no references to it
                     active.connection = newConn
                     return newConn
                 }
             }
         } else if actives.count < maxCount  {
-            // we have room to open a new connection!
+            // all connections are busy, but we have room to open a new connection!
             let active = ActiveDatabasePoolConnection<Database>()
             self.actives.append(active)
 
@@ -67,8 +70,7 @@ public final class DatabaseConnectionPool<Database> where Database: DatabaseKit.
                 return newConn
             }
         } else {
-            // connections are exhausted, we must wait for one
-            // to be returned
+            // connections are exhausted, we must wait for one to be returned
             let promise = eventLoop.newPromise(Database.Connection.self)
             waiters.append(promise)
             return promise.futureResult
@@ -87,7 +89,7 @@ public final class DatabaseConnectionPool<Database> where Database: DatabaseKit.
         active.isAvailable = true
 
         // now that we know a new connection is available, we should
-        // take this chance to fulfill one of the workers
+        // take this chance to fulfill one of the waiters
         if let waiter = waiters.popLast() {
             requestConnection().cascade(promise: waiter)
         }

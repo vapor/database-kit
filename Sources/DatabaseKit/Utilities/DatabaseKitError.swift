@@ -15,11 +15,14 @@ public struct DatabaseKitError: Debuggable {
         reason: String,
         suggestedFixes: [String] = [],
         possibleCauses: [String] = [],
-        source: SourceLocation
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line,
+        column: UInt = #column
     ) {
         self.identifier = identifier
         self.reason = reason
-        self.sourceLocation = source
+        self.sourceLocation = SourceLocation(file: file, function: function, line: line, column: column, range: nil)
         self.stackTrace = DatabaseKitError.makeStackTrace()
         self.suggestedFixes = suggestedFixes
         self.possibleCauses = possibleCauses

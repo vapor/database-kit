@@ -1,18 +1,12 @@
-import Async
-import Service
-
 /// Registers database kit services.
 public final class DatabaseKitProvider: Provider {
-    /// See Provider.repositoryName
-    public static let repositoryName = "database-kit"
-
     /// Creates a new `DatabaseKitProvider`
     public init() {}
 
     /// See Provider.register
     public func register(_ services: inout Services) throws {
         services.register { container -> Databases in
-            let config = try container.make(DatabaseConfig.self)
+            let config = try container.make(DatabasesConfig.self)
             var databases: [String: Any] = [:]
             for (id, lazyDatabase) in config.databases {
                 let db = try lazyDatabase(container)

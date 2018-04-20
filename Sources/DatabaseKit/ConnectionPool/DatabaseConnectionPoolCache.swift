@@ -1,6 +1,3 @@
-import Async
-import Service
-
 /// Caches database connection pools.
 /// This is stored on an event loop to allow connection pool re-use.
 internal final class DatabaseConnectionPoolCache: Service {
@@ -33,13 +30,10 @@ internal final class DatabaseConnectionPoolCache: Service {
             return existing
         } else {
             guard let database = databases.database(for: id) else {
-                throw DatabaseKitError(identifier: "requestPool", reason: "No database with id `\(id)` is configured.", source: .capture())
+                throw DatabaseKitError(identifier: "requestPool", reason: "No database with id `\(id)` is configured.")
             }
 
-            let new = database.newConnectionPool(
-                max: maxConnections,
-                on: eventLoop
-            )
+            let new = database.newConnectionPool(max: maxConnections, on: eventLoop)
             cache[id.uid] = new
             return new
         }

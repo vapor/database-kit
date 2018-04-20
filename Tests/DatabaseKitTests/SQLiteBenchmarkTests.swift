@@ -1,4 +1,3 @@
-import Async
 import DatabaseKit
 import XCTest
 

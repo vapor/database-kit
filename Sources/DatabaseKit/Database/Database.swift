@@ -1,6 +1,3 @@
-import Async
-import Dispatch
-
 /// Types conforming to this protocol can be used as
 /// a database for Fluent connections and connection pools.
 public protocol Database {
@@ -15,9 +12,7 @@ public protocol Database {
 }
 
 extension Database {
-    /// Create a fluent connection pool for this database.
     public func newConnectionPool(max: Int, on worker: Worker) -> DatabaseConnectionPool<Self> {
         return DatabaseConnectionPool(max: max, database: self, on: worker)
     }
 }
-
