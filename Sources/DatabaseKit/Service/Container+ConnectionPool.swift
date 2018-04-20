@@ -13,9 +13,8 @@ extension Container {
         closure: @escaping (Database.Connection) throws -> Future<T>
     ) -> Future<T> {
         return requestPooledConnection(to: database).flatMap(to: T.self) { conn in
-            return try closure(conn).map(to: T.self) { res in
-                try self.releasePooledConnection(conn, to: database)
-                return res
+            return try closure(conn).always {
+                try? self.releasePooledConnection(conn, to: database)
             }
         }
     }
