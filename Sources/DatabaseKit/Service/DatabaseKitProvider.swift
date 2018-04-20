@@ -28,10 +28,7 @@ public final class DatabaseKitProvider: Provider {
             )
         }
 
-        services.register { worker -> ActiveDatabaseConnectionCache in
-            return ActiveDatabaseConnectionCache()
-        }
-
+        services.register(DatabaseConnectionCache.self)
         services.register(DatabaseConnectionPoolConfig.self)
     }
 

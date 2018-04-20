@@ -8,14 +8,14 @@ extension Container {
     /// You must call `.releaseCachedConnections()` to release the connections.
     public func requestCachedConnection<Database>(to database: DatabaseIdentifier<Database>) -> Future<Database.Connection> {
         return Future.flatMap(on: self) {
-            let connections = try self.make(ActiveDatabaseConnectionCache.self)
+            let connections = try self.make(DatabaseConnectionCache.self)
             if let current = connections.cache[database.uid]?.connection as? Future<Database.Connection> {
                 return current
             }
 
             /// create an active connection, since we don't have to worry about threading
             /// we can be sure that .connection will be set before this is called again
-            let active = ActiveDatabaseConnection()
+            let active = CachedDatabaseConnection()
             connections.cache[database.uid] = active
 
             /// first get a pointer to the pool
@@ -37,7 +37,7 @@ extension Container {
 
     /// Releases all connections created by calls to `.requestCachedConnection(to:)`.
     public func releaseCachedConnections() throws {
-        let connections = try make(ActiveDatabaseConnectionCache.self)
+        let connections = try make(DatabaseConnectionCache.self)
         let conns = connections.cache
         connections.cache = [:]
         for (_, conn) in conns {
