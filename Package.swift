@@ -19,5 +19,6 @@ let package = Package(
         .testTarget(name: "DatabaseKitTests", dependencies: ["DatabaseKit"]),
         .target(name: "SQL"),
         .testTarget(name: "SQLTests", dependencies: ["SQL"]),
+        .target(name: "CacheKit", dependencies: ["DatabaseKit"]),
     ]
 )
