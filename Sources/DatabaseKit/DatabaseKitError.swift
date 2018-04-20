@@ -30,3 +30,7 @@ public struct DatabaseKitError: Debuggable {
 func ERROR(_ string: @autoclosure () -> String, file: StaticString = #file, line: Int = #line) {
     print("[DatabaseKit] \(string()) [\(file.description.split(separator: "/").last!):\(line)]")
 }
+
+internal func debugOnly(_ body: () -> Void) {
+    assert({ body(); return true }())
+}

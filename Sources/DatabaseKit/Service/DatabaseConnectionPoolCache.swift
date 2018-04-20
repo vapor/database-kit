@@ -14,11 +14,11 @@ internal final class DatabaseConnectionPoolCache: Service {
     private let eventLoop: EventLoop
 
     /// Maximum connections.
-    private let maxConnections: UInt
+    private let maxConnections: Int
 
     /// Creates a new connection pool cache for the supplied
     /// databases using a given container.
-    internal init(databases: Databases, maxConnections: UInt, on worker: Worker) {
+    internal init(databases: Databases, maxConnections: Int, on worker: Worker) {
         self.databases = databases
         self.eventLoop = worker.eventLoop
         self.maxConnections = maxConnections
@@ -36,7 +36,7 @@ internal final class DatabaseConnectionPoolCache: Service {
                 throw DatabaseKitError(identifier: "requestPool", reason: "No database with id `\(id)` is configured.", source: .capture())
             }
 
-            let new = database.makeConnectionPool(
+            let new = database.newConnectionPool(
                 max: maxConnections,
                 on: eventLoop
             )

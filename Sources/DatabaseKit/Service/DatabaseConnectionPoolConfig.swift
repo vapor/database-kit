@@ -1,5 +1,3 @@
-import Service
-
 /// Configure the database connection pools.
 public struct DatabaseConnectionPoolConfig: ServiceType {
     /// Maximum number of connections per pool.
@@ -9,20 +7,20 @@ public struct DatabaseConnectionPoolConfig: ServiceType {
     ///
     /// The minimum supported value is `1`, meaning that your database must be able to handle
     /// at least n connections where n = num logical CPU cores.
-    public var maxConnections: UInt
+    public var maxConnections: Int
 
     /// Creates a new `DatabaseConnectionPoolConfig`
-    public init(maxConnections: UInt) {
+    public init(maxConnections: Int) {
         assert(maxConnections >= 1) // minimum supported value is 1
         self.maxConnections = maxConnections
     }
 
     /// Creates a new `DatabaseConnectionPoolConfig` with default settings.
     public static func `default`() -> DatabaseConnectionPoolConfig {
-        return .init(maxConnections: 2)
+        return .init(maxConnections: System.coreCount)
     }
 
-    /// See `ServiceType.makeService(for:)`
+    /// See `ServiceType`
     public static func makeService(for worker: Container) throws -> DatabaseConnectionPoolConfig {
         return .default()
     }

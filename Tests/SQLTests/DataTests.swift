@@ -106,7 +106,7 @@ final class DataTests: XCTestCase {
 
         XCTAssertEqual(
             GeneralSQLSerializer.shared.serialize(data: select),
-            "SELECT * FROM `foo` WHERE (true AND false AND `c` != ? AND `d` = ? AND `e` NOT IN (?, ?) AND `f` IN (?, ?))"
+            "SELECT * FROM `foo` WHERE (1 AND 0 AND `c` != ? AND `d` = ? AND `e` NOT IN (?, ?) AND `f` IN (?, ?))"
         )
     }
 
