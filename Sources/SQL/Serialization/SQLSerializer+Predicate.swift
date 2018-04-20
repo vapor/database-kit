@@ -43,8 +43,8 @@ extension SQLSerializer {
                 case 0:
                     /// if serializing a subset filter with 0 values, we must use true or false
                     switch predicate.comparison {
-                    case .notIn: predicate.value = .custom("true")
-                    case .in: predicate.value = .custom("false")
+                    case .notIn: predicate.value = .custom("1")
+                    case .in: predicate.value = .custom("0")
                     default: break
                     }
                     predicate.column.name = ""
