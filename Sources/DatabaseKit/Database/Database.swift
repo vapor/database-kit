@@ -12,7 +12,8 @@ public protocol Database {
 }
 
 extension Database {
-    public func newConnectionPool(max: Int, on worker: Worker) -> DatabaseConnectionPool<Self> {
-        return DatabaseConnectionPool(max: max, database: self, on: worker)
+    /// Creates a new `DatabaseConnectionPool` for this `Database`.
+    public func newConnectionPool(config: DatabaseConnectionPoolConfig, on worker: Worker) -> DatabaseConnectionPool<Self> {
+        return DatabaseConnectionPool(config: config, database: self, on: worker)
     }
 }

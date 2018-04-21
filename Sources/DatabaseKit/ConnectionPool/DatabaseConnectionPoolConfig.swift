@@ -1,4 +1,4 @@
-/// Configure the database connection pools.
+/// Used to configure `DatabaseConnectionPool`s created by your application.
 public struct DatabaseConnectionPoolConfig: ServiceType {
     /// Maximum number of connections per pool.
     ///
@@ -20,7 +20,7 @@ public struct DatabaseConnectionPoolConfig: ServiceType {
         return .init(maxConnections: System.coreCount)
     }
 
-    /// See `ServiceType`
+    /// See `ServiceType`.
     public static func makeService(for worker: Container) throws -> DatabaseConnectionPoolConfig {
         return .default()
     }

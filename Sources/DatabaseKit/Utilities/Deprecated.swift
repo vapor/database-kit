@@ -12,7 +12,7 @@ extension Database {
     /// See `Database.newConnectionPool(on:worker:)`.
     @available(*, deprecated, renamed: "newConnectionPool(on:worker:)")
     public func makeConnectionPool(max: UInt, on worker: Worker) -> DatabaseConnectionPool<Self> {
-        return newConnectionPool(max: numericCast(max), on: worker)
+        return newConnectionPool(config: DatabaseConnectionPoolConfig(maxConnections: numericCast(max)), on: worker)
     }
 }
 

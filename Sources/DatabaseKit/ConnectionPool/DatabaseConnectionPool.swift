@@ -18,7 +18,7 @@ public final class DatabaseConnectionPool<Database> where Database: DatabaseKit.
     public let eventLoop: EventLoop
 
     /// The maximum number of connections this pool should hold.
-    public let maxCount: Int
+    public let config: DatabaseConnectionPoolConfig
 
     // MARK: Private Properties
 
@@ -31,10 +31,10 @@ public final class DatabaseConnectionPool<Database> where Database: DatabaseKit.
     /// Creates a new `DatabaseConnectionPool`.
     ///
     /// Use `Database.newConnectionPool(...)`.
-    internal init(max: Int, database: Database, on worker: Worker) {
+    internal init(config: DatabaseConnectionPoolConfig, database: Database, on worker: Worker) {
         self.database = database
         self.eventLoop = worker.eventLoop
-        self.maxCount = max
+        self.config = config
         self.actives = []
         self.waiters = []
     }
@@ -91,7 +91,7 @@ public final class DatabaseConnectionPool<Database> where Database: DatabaseKit.
                     return newConn
                 }
             }
-        } else if actives.count < maxCount  {
+        } else if actives.count < config.maxConnections  {
             // all connections are busy, but we have room to open a new connection!
             let active = ActiveDatabasePoolConnection<Database>()
             self.actives.append(active)

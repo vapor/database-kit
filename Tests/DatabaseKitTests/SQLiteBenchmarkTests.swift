@@ -8,7 +8,7 @@ final class DatabaseKitTests: XCTestCase {
 
     func testConnectionPooling() throws {
         let foo = FooDatabase()
-        let pool = foo.newConnectionPool(max: 2, on: EmbeddedEventLoop())
+        let pool = foo.newConnectionPool(config: .init(maxConnections: 2), on: EmbeddedEventLoop())
 
         // make two connections
         let connA = try pool.requestConnection().wait()

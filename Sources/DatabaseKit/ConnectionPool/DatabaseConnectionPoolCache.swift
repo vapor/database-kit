@@ -1,14 +1,8 @@
-/// Caches database connection pools.
-/// This is stored on an event loop to allow connection pool re-use.
+/// Caches `DatabaseConnectionPool`s on a `Container`.
 internal final class DatabaseConnectionPoolCache: ServiceType {
     /// See `ServiceType`.
-    static func makeService(for worker: Container) throws -> DatabaseConnectionPoolCache {
-        let config = try worker.make(DatabaseConnectionPoolConfig.self)
-        return try DatabaseConnectionPoolCache(
-            databases: worker.make(),
-            maxConnections: config.maxConnections,
-            on: worker
-        )
+    static func makeService(for container: Container) throws -> DatabaseConnectionPoolCache {
+        return try DatabaseConnectionPoolCache(databases: container.make(), config: container.make(), on: container)
     }
 
     /// The source databases.
@@ -21,30 +15,24 @@ internal final class DatabaseConnectionPoolCache: ServiceType {
     private let eventLoop: EventLoop
 
     /// Maximum connections.
-    private let maxConnections: Int
+    private let config: DatabaseConnectionPoolConfig
 
-    /// Creates a new connection pool cache for the supplied
-    /// databases using a given container.
-    internal init(databases: Databases, maxConnections: Int, on worker: Worker) {
+    /// Creates a new `DatabaseConnectionPoolCache`.
+    internal init(databases: Databases, config: DatabaseConnectionPoolConfig, on worker: Worker) {
         self.databases = databases
         self.eventLoop = worker.eventLoop
-        self.maxConnections = maxConnections
+        self.config = config
         self.cache = [:]
     }
 
-    /// Fetches the existing DatabaseConnectionPool for the supplied id
-    /// or creates a new one.
-    internal func pool<D>(for id: DatabaseIdentifier<D>) throws -> DatabaseConnectionPool<D>
+    /// Fetches the `DatabaseConnectionPool` for the identified `Database`.
+    internal func requirePool<D>(for dbid: DatabaseIdentifier<D>) throws -> DatabaseConnectionPool<D>
     {
-        if let existing = cache[id.uid] as? DatabaseConnectionPool<D> {
+        if let existing = cache[dbid.uid] as? DatabaseConnectionPool<D> {
             return existing
         } else {
-            guard let database = databases.database(for: id) else {
-                throw DatabaseKitError(identifier: "requestPool", reason: "No database with id `\(id)` is configured.")
-            }
-
-            let new = database.newConnectionPool(max: maxConnections, on: eventLoop)
-            cache[id.uid] = new
+            let new = try databases.requireDatabase(for: dbid).newConnectionPool(config: config, on: eventLoop)
+            cache[dbid.uid] = new
             return new
         }
     }
