@@ -1,6 +1,4 @@
-import Foundation
-
-/// Capable of logging queries through a supplied DatabaseLogger.
+/// Capable of logging queries through a supplied `DatabaseLogger`.
 public protocol LogSupporting {
     /// Enables query logging to the supplied logger.
     func enableLogging(using logger: DatabaseLogger)

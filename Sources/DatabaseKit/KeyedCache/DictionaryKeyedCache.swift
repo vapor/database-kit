@@ -9,7 +9,7 @@ public final class DictionaryKeyedCache: KeyedCache, ServiceType {
 
     /// See `ServiceType`.
     public static func makeService(for container: Container) throws -> Self {
-        return .init(on: container)
+        return .init()
     }
 
     /// The underlying storage of this cache.
@@ -19,8 +19,9 @@ public final class DictionaryKeyedCache: KeyedCache, ServiceType {
     private let eventLoop: EventLoop
 
     /// Creates a new `DictionaryKeyedCache`.
-    public init(on worker: Worker) {
-        self.eventLoop = worker.eventLoop
+    public init() {
+        // no actual async work is being done, so we can just use `EmbeddedEventLoop`
+        self.eventLoop = EmbeddedEventLoop()
         self.storage = [:]
     }
 
