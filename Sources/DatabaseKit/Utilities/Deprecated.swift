@@ -15,3 +15,11 @@ extension Database {
         return newConnectionPool(max: numericCast(max), on: worker)
     }
 }
+
+extension Container {
+    /// See `Container.withNewConnection(to:closure:)`.
+    @available(*, deprecated, renamed: "withNewConnection(to:closure:)")
+    public func withConnection<Database, T>(to dbid: DatabaseIdentifier<Database>, closure: @escaping (Database.Connection) throws -> Future<T>) -> Future<T> {
+        return withNewConnection(to: dbid, closure: closure)
+    }
+}

@@ -12,4 +12,11 @@ public struct Databases: Service {
     public func database<D>(for id: DatabaseIdentifier<D>) -> D? {
         return storage[id.uid] as? D
     }
+
+    public func requireDatabase<D>(for dbid: DatabaseIdentifier<D>) throws -> D {
+        guard let db = database(for: dbid) else {
+            throw DatabaseKitError(identifier: "dbRequired", reason: "No database with id '\(dbid.uid)' is configured.")
+        }
+        return db
+    }
 }
