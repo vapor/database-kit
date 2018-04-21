@@ -18,20 +18,10 @@ extension Container {
     ///     - closure: Callback that accepts the pooled `DatabaseConnection`.
     /// - returns: A future containing the result of the closure.
     public func withPooledConnection<Database, T>(to dbid: DatabaseIdentifier<Database>, closure: @escaping (Database.Connection) throws -> Future<T>) -> Future<T> {
-        // handler for releasing the connections
-        let release: (Database.Connection) -> () = { conn in
-            do {
-                try self.releasePooledConnection(conn, to: dbid)
-            } catch {
-                ERROR("\(error)")
-            }
-        }
-
-        // request a pooled connection, call the closure, then release it
-        return requestPooledConnection(to: dbid).flatMap(to: T.self) { conn in
-            return try closure(conn).always {
-                release(conn)
-            }
+        do {
+            return try connectionPool(to: dbid).withConnection(closure)
+        } catch {
+            return eventLoop.newFailedFuture(error: error)
         }
     }
 

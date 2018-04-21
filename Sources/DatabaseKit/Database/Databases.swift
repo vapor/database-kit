@@ -1,5 +1,20 @@
 /// Represents the databases currently configured for Fluent.
-public struct Databases: Service {
+public struct Databases: ServiceType {
+    /// See `ServiceType`.
+    public static func makeService(for container: Container) throws -> Databases {
+        let config = try container.make(DatabasesConfig.self)
+        var databases: [String: Any] = [:]
+        for (id, lazyDatabase) in config.databases {
+            let db = try lazyDatabase(container)
+            if let supports = db as? LogSupporting, let logger = config.logging[id] {
+                logger.dbID = id
+                supports.enableLogging(using: logger)
+            }
+            databases[id] = db
+        }
+        return Databases(databases)
+    }
+
     /// Internal storage: [DatabaseIdentifier: Database]
     private let storage: [String: Any]
 

@@ -1,6 +1,16 @@
 /// Caches database connection pools.
 /// This is stored on an event loop to allow connection pool re-use.
-internal final class DatabaseConnectionPoolCache: Service {
+internal final class DatabaseConnectionPoolCache: ServiceType {
+    /// See `ServiceType`.
+    static func makeService(for worker: Container) throws -> DatabaseConnectionPoolCache {
+        let config = try worker.make(DatabaseConnectionPoolConfig.self)
+        return try DatabaseConnectionPoolCache(
+            databases: worker.make(),
+            maxConnections: config.maxConnections,
+            on: worker
+        )
+    }
+
     /// The source databases.
     private let databases: Databases
 
@@ -39,4 +49,3 @@ internal final class DatabaseConnectionPoolCache: Service {
         }
     }
 }
-
