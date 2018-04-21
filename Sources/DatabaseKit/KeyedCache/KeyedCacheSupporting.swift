@@ -1,17 +1,13 @@
-/// A key-value cache
+/// A `Database` that supports key-value actions.
 public protocol KeyedCacheSupporting: Database {
-    /// Gets the value as type `D` deserialized from the value associated with the `key`
-    ///
-    /// Returns an empty future that triggers on successful storage
-    static func keyedCacheGet<D>(_ type: D.Type, forKey key: String, on conn: Self.Connection) throws -> Future<D?>
+    /// Gets an instance of decodable type `D` parsed from the value associated with the `key`
+    static func keyedCacheGet<D>(_ key: String, as decodable: D.Type, on conn: Self.Connection) throws -> Future<D?>
         where D: Decodable
 
-    /// Sets the value to `entity` stored associated with the `key`
-    ///
-    /// Returns an empty future that triggers on successful storage
-    static func keyedCacheSet<E>(_ entity: E, forKey key: String, on conn: Self.Connection) throws -> Future<Void>
+    /// Sets the value to an encodable object at the supplied `key`.
+    static func keyedCacheSet<E>(_ key: String, to encodable: E, on conn: Self.Connection) throws -> Future<Void>
         where E: Encodable
 
-    /// Removes the value associated with the `key`
+    /// Removes the value associated with the `key`.
     static func keyedCacheRemove(_ key: String, on conn: Self.Connection) throws -> Future<Void>
 }

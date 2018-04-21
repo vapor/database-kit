@@ -23,3 +23,17 @@ extension Container {
         return withNewConnection(to: dbid, closure: closure)
     }
 }
+
+extension KeyedCache {
+    /// See `KeyedCache.get(_:as:)`.
+    @available(*, deprecated, renamed: "get(_:as:)")
+    public func get<D>(_ type: D.Type, forKey key: String) -> Future<D?> where D: Decodable {
+        return get(key, as: D.self)
+    }
+
+    /// See `KeyedCache.set(_:to:)`.
+    @available(*, deprecated, renamed: "set(_:to:)")
+    public func set<E>(_ value: E, forKey key: String) -> Future<Void> where E: Encodable {
+        return set(key, to: value)
+    }
+}
