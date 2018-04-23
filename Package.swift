@@ -5,7 +5,6 @@ let package = Package(
     name: "DatabaseKit",
     products: [
         .library(name: "DatabaseKit", targets: ["DatabaseKit"]),
-        .library(name: "SQL", targets: ["SQL"]),
     ],
     dependencies: [
         // 🌎 Utility package containing tools for byte manipulation, Codable, OS APIs, and debugging.
@@ -17,7 +16,5 @@ let package = Package(
     targets: [
         .target(name: "DatabaseKit", dependencies: ["Async", "Service"]),
         .testTarget(name: "DatabaseKitTests", dependencies: ["DatabaseKit"]),
-        .target(name: "SQL"),
-        .testTarget(name: "SQLTests", dependencies: ["SQL"]),
     ]
 )

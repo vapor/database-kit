@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-/// Capable of logging queries through a supplied DatabaseLogger.
-=======
 /// Capable of logging queries through a supplied `DatabaseLogger`.
->>>>>>> e7525aabb2828bfa96c109a73c073c693f949f12
 public protocol LogSupporting {
     /// Enables query logging to the supplied `DatabaseLogger`.
     func enableLogging(using logger: DatabaseLogger)
