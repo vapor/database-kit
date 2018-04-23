@@ -33,12 +33,12 @@ public final class DictionaryKeyedCache: KeyedCache, ServiceType {
     /// See `KeyedCache`.
     public func set<E>(_ key: String, to encodable: E) -> Future<Void> where E : Encodable {
         storage[key] = encodable
-        return .done(on: eventLoop)
+        return eventLoop.newSucceededFuture(result: ())
     }
 
     /// See `KeyedCache`.
     public func remove(_ key: String) -> Future<Void> {
         storage[key] = nil
-        return .done(on: eventLoop)
+        return eventLoop.newSucceededFuture(result: ())
     }
 }

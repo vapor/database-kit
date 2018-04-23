@@ -66,7 +66,7 @@ extension Container {
     /// - parameters:
     ///     - dbid: `DatabaseIdentifier` of a database registered with `Databases`.
     /// - returns: A `DatabaseConnectionPool` for the identified `Database`.
-    public func connectionPool<Database>(to dbid: DatabaseIdentifier<Database>) throws -> DatabaseConnectionPool<Database> {
+    public func connectionPool<Database>(to dbid: DatabaseIdentifier<Database>) throws -> DatabaseConnectionPool<ConfiguredDatabase<Database>> {
         let cache = try self.make(DatabaseConnectionPoolCache.self)
         return try cache.requirePool(for: dbid)
     }

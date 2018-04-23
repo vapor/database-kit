@@ -38,7 +38,7 @@ extension Container {
     /// - returns: A future containing the newly created `DatabaseConnection`.
     public func newConnection<Database>(to dbid: DatabaseIdentifier<Database>) -> Future<Database.Connection> {
         do {
-            return try make(Databases.self).requireDatabase(for: dbid).newConnection(on: self)
+            return try make(Databases.self).requireDatabase(for: dbid).newConnection(on: eventLoop)
         } catch {
             return eventLoop.newFailedFuture(error: error)
         }

@@ -2,14 +2,28 @@ import Debugging
 
 /// Errors that can be thrown while working with Vapor.
 public struct DatabaseKitError: Debuggable {
+    /// See `Debuggable`.
     public static let readableName = "DatabaseKit Error"
+
+    /// See `Debuggable`.
     public let identifier: String
+
+    /// See `Debuggable`.
     public var reason: String
+
+    /// See `Debuggable`.
     public var sourceLocation: SourceLocation?
+
+    /// See `Debuggable`.
     public var stackTrace: [String]
+
+    /// See `Debuggable`.
     public var suggestedFixes: [String]
+
+    /// See `Debuggable`.
     public var possibleCauses: [String]
 
+    /// Creates a new `DatabaseKitError`.
     init(
         identifier: String,
         reason: String,
@@ -34,6 +48,7 @@ func ERROR(_ string: @autoclosure () -> String, file: StaticString = #file, line
     print("[DatabaseKit] \(string()) [\(file.description.split(separator: "/").last!):\(line)]")
 }
 
+/// Only includes the supplied closure in non-release builds.
 internal func debugOnly(_ body: () -> Void) {
     assert({ body(); return true }())
 }
