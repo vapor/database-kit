@@ -16,7 +16,7 @@ public final class MemoryKeyedCache: KeyedCache, Service {
         // no actual async work is being done, so we can just use `EmbeddedEventLoop`
         self.eventLoop = EmbeddedEventLoop()
         self.lock = DispatchQueue(label: "codes.vapor.database-kit.memory-keyed-cache.lock")
-        self.memory = DictionaryKeyedCache(on: eventLoop)
+        self.memory = DictionaryKeyedCache()
     }
 
     /// See `KeyedCache`.
