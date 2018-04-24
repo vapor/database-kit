@@ -67,10 +67,10 @@ public struct DatabasesConfig: Service {
     public mutating func enableLogging<D>(on db: DatabaseIdentifier<D>, logger: DatabaseLogHandler = PrintLogHandler()) where D: LogSupporting {
         let logger = DatabaseLogger(database: db, handler: logger)
         var config = connectionConfig[db.uid] as? ConnectionConfig<D> ?? .init()
-        config.pipeline.append({ db, conn in
-            db.enableLogging(logger, on: conn)
+        config.pipeline.append { conn in
+            D.enableLogging(logger, on: conn)
             return .done(on: conn)
-        })
+        }
         connectionConfig[db.uid] = config
     }
 

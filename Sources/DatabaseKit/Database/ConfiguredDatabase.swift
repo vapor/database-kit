@@ -20,7 +20,7 @@ public struct ConfiguredDatabase<D>: Database where D: Database {
     public func newConnection(on worker: Worker) -> Future<D.Connection> {
         return database.newConnection(on: worker).then { conn in
             return self.config.pipeline.map { config -> LazyFuture<Void> in
-                return { config(self.database, conn) }
+                return { config(conn) }
             }.syncFlatten(on: worker).transform(to: conn)
         }
     }
@@ -54,7 +54,7 @@ extension ConfiguredDatabase: KeyedCacheSupporting where D: KeyedCacheSupporting
 /// Holds an array of closures that should run to configure each new connection.
 internal struct ConnectionConfig<D> where D: Database {
     /// Array of configuration closures.
-    var pipeline: [(D, D.Connection) -> Future<Void>]
+    var pipeline: [(D.Connection) -> Future<Void>]
 
     /// Creates a new `ConnectionConfig`.
     init() {
