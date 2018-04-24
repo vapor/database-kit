@@ -13,7 +13,7 @@ public protocol DatabaseConnection: DatabaseConnectable, Extendable {
 
 extension DatabaseConnection {
     /// See `DatabaseConnectable`.
-    public func databaseConnection<Database>(to database: DatabaseIdentifier<Database>) -> Future<Database.Connection> {
+    public func databaseConnection<Database>(to database: DatabaseIdentifier<Database>?) -> Future<Database.Connection> {
         let future: Future<Database.Connection>
         if let conn = self as? Database.Connection {
             future = eventLoop.newSucceededFuture(result: conn)

@@ -12,6 +12,8 @@ public protocol DatabaseConnectable: Worker {
     ///
     /// - parameters:
     ///     - dbid: `DatabaseIdentifier` of a database registered with `Databases`.
+    ///             If set, this can be used to acquire a database reference for creating the connection.
+    ///             if `nil`, the connection must be obtainable in another way (such as if `self` is the connection).
     /// - returns: A future containing the `DatabaseConnection`.
-    func databaseConnection<Database>(to database: DatabaseIdentifier<Database>) -> Future<Database.Connection>
+    func databaseConnection<Database>(to database: DatabaseIdentifier<Database>?) -> Future<Database.Connection>
 }
