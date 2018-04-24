@@ -30,18 +30,22 @@ extension ConfiguredDatabase: KeyedCacheSupporting where D: KeyedCacheSupporting
     // MARK: Keyed Cache
 
     /// See `KeyedCacheSupporting`.
-    public func keyedCacheGet<D>(_ key: String, as decodable: D.Type, on conn: Connection) throws -> Future<D?> where D : Decodable {
-        return try database.keyedCacheGet(key, as: D.self, on: conn)
+    public static func keyedCacheGet<T>(_ key: String, as decodable: T.Type, on conn: Connection) throws -> Future<T?>
+        where T: Decodable
+    {
+        return try D.keyedCacheGet(key, as: T.self, on: conn)
     }
 
     /// See `KeyedCacheSupporting`.
-    public func keyedCacheSet<E>(_ key: String, to encodable: E, on conn: D.Connection) throws -> EventLoopFuture<Void> where E : Encodable {
-        return try database.keyedCacheSet(key, to: encodable, on: conn)
+    public static func keyedCacheSet<E>(_ key: String, to encodable: E, on conn: D.Connection) throws -> Future<Void>
+        where E: Encodable
+    {
+        return try D.keyedCacheSet(key, to: encodable, on: conn)
     }
 
     /// See `KeyedCacheSupporting`.
-    public func keyedCacheRemove(_ key: String, on conn: D.Connection) throws -> EventLoopFuture<Void> {
-        return try database.keyedCacheRemove(key, on: conn)
+    public static func keyedCacheRemove(_ key: String, on conn: D.Connection) throws -> Future<Void> {
+        return try D.keyedCacheRemove(key, on: conn)
     }
 }
 
