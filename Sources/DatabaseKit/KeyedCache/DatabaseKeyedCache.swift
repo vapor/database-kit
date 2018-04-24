@@ -39,7 +39,7 @@ extension Container {
     ///
     /// - parameters:
     ///     - dbid: `DatabaseIdentifier` of a database registered with `Databases`.
-    public func keyedCache<Database>(for dbid: DatabaseIdentifier<Database>) throws -> DatabaseKeyedCache<AnyDatabase<Database>> {
+    public func keyedCache<Database>(for dbid: DatabaseIdentifier<Database>) throws -> DatabaseKeyedCache<ConfiguredDatabase<Database>> {
         return try DatabaseKeyedCache(pool: connectionPool(to: dbid))
     }
 }
