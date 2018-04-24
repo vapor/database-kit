@@ -26,9 +26,9 @@ internal final class DatabaseConnectionPoolCache: ServiceType {
     }
 
     /// Fetches the `DatabaseConnectionPool` for the identified `Database`.
-    internal func requirePool<D>(for dbid: DatabaseIdentifier<D>) throws -> DatabaseConnectionPool<ConfiguredDatabase<D>>
+    internal func requirePool<D>(for dbid: DatabaseIdentifier<D>) throws -> DatabaseConnectionPool<AnyDatabase<D>>
     {
-        if let existing = cache[dbid.uid] as? DatabaseConnectionPool<ConfiguredDatabase<D>> {
+        if let existing = cache[dbid.uid] as? DatabaseConnectionPool<AnyDatabase<D>> {
             return existing
         } else {
             let new = try databases.requireDatabase(for: dbid).newConnectionPool(config: config, on: eventLoop)
