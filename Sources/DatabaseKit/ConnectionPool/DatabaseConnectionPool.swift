@@ -17,7 +17,7 @@ public final class DatabaseConnectionPool<Database> where Database: DatabaseKit.
     /// The Worker for this pool.
     public let eventLoop: EventLoop
 
-    /// The maximum number of connections this pool should hold.
+    /// This pool's configuration settings.
     public let config: DatabaseConnectionPoolConfig
 
     // MARK: Private Properties

@@ -14,7 +14,7 @@ internal final class DatabaseConnectionPoolCache: ServiceType {
     /// The container to use.
     private let eventLoop: EventLoop
 
-    /// Maximum connections.
+    /// The pool configuration settings.
     private let config: DatabaseConnectionPoolConfig
 
     /// Creates a new `DatabaseConnectionPoolCache`.
