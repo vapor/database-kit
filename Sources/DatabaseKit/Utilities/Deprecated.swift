@@ -3,6 +3,8 @@
 public typealias DatabaseConfig = DatabasesConfig
 
 extension Database {
+    // MARK: Deprecated
+
     /// See `Database.newConnection(on:)`.
     @available(*, deprecated, renamed: "newConnection(on:)")
     public func makeConnection(on worker: Worker) -> Future<Connection> {
@@ -17,6 +19,8 @@ extension Database {
 }
 
 extension Container {
+    // MARK: Deprecated
+
     /// See `Container.withNewConnection(to:closure:)`.
     @available(*, deprecated, renamed: "withNewConnection(to:closure:)")
     public func withConnection<Database, T>(to dbid: DatabaseIdentifier<Database>, closure: @escaping (Database.Connection) throws -> Future<T>) -> Future<T> {
@@ -25,6 +29,8 @@ extension Container {
 }
 
 extension KeyedCache {
+    // MARK: Deprecated
+    
     /// See `KeyedCache.get(_:as:)`.
     @available(*, deprecated, renamed: "get(_:as:)")
     public func get<D>(_ type: D.Type, forKey key: String) -> Future<D?> where D: Decodable {

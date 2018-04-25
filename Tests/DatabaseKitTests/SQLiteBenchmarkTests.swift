@@ -43,15 +43,44 @@ final class DatabaseKitTests: XCTestCase {
         XCTAssertEqual(foo.connectionsCreated, 3)
     }
 
+    func testDatabasesConfig() throws {
+        var config = DatabasesConfig()
+
+        let a: DatabaseIdentifier<FooDatabase> = "a"
+        let b: DatabaseIdentifier<FooDatabase> = "b"
+
+        do {
+            let fooA = FooDatabase()
+            let fooB = FooDatabase()
+            config.add(database: fooA, as: a)
+            config.enableLogging(on: a)
+            config.add(database: fooB, as: b)
+        }
+
+        let container = BasicContainer(config: .init(), environment: .testing, services: .init(), on: EmbeddedEventLoop())
+        let dbs = try config.resolve(on: container)
+        do {
+            let connA = try dbs.requireDatabase(for: a).newConnection(on: container).wait()
+            let connB = try dbs.requireDatabase(for: b).newConnection(on: container).wait()
+            XCTAssertNotNil(connA.logger)
+            XCTAssertNil(connB.logger)
+        }
+    }
+
+    func testDocs() throws {
+        
+    }
+
     static let allTests = [
         ("testURLDatabaseName", testURLDatabaseName),
         ("testConnectionPooling", testConnectionPooling),
+        ("testDatabasesConfig", testDatabasesConfig),
     ]
 }
 
 // MARK: Private
 
-private final class FooDatabase: Database {
+private final class FooDatabase: Database, LogSupporting {
     var connectionsCreated: Int
     init() {
         self.connectionsCreated = 0
@@ -60,12 +89,16 @@ private final class FooDatabase: Database {
         connectionsCreated += 1
         return worker.eventLoop.newSucceededFuture(result: FooConnection(on: worker))
     }
+    static func enableLogging(_ logger: DatabaseLogger, on conn: FooConnection) {
+        conn.logger = logger
+    }
 }
 
 private final class FooConnection: BasicWorker, DatabaseConnection {
     var isClosed: Bool
     var extend: Extend
     let eventLoop: EventLoop
+    var logger: DatabaseLogger?
 
     init(on worker: Worker) {
         self.isClosed = false

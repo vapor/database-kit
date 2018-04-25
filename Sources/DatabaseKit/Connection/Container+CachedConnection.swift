@@ -1,4 +1,4 @@
-/// Request and release cached connections.
+/// Containers that have `DatabasesConfig` structs registered can be used to open, pool, and cache connections.
 extension Container {
     // MARK: Cached
     
