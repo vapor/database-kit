@@ -1,11 +1,19 @@
-import Async
-
-/// Capable of being represented as a database connection
-/// for the supplied identifier.
+/// Capable of creating connections to identified databases.
+///
+/// Subsequent requests for a connection to the same database should always
+/// yield the same connection.
+///
+/// Types conforming to this protocol are responsible for cleaning up open connections
+/// in a way that makes sense to their use case. Usually on deinit.
 public protocol DatabaseConnectable: Worker {
-    /// Create a database connection for the supplied dbid.
+    /// Returns a `DatabaseConnection` to the identified `Database`.
     ///
-    /// If the database id is nil, any connection for this database
-    /// type can be used.
-    func connect<D>(to database: DatabaseIdentifier<D>?) -> Future<D.Connection>
+    /// Subsequent calls to this method on the same type should always return the same connection.
+    ///
+    /// - parameters:
+    ///     - dbid: `DatabaseIdentifier` of a database registered with `Databases`.
+    ///             If set, this can be used to acquire a database reference for creating the connection.
+    ///             if `nil`, the connection must be obtainable in another way (such as if `self` is the connection).
+    /// - returns: A future containing the `DatabaseConnection`.
+    func databaseConnection<Database>(to database: DatabaseIdentifier<Database>?) -> Future<Database.Connection>
 }

@@ -1,69 +1,32 @@
-import Async
-import Service
-
-/// Types conforming to this protocol can be used
-/// as a database connection for executing queries.
+/// Types conforming to this protocol can be used as a `Database.Connection`.
+///
+/// Most of the database interaction work is done through static methods on `Database` that accept
+/// a connection. However, there are a few things like `isClosed` and `close()` that a connection must implement.
 public protocol DatabaseConnection: DatabaseConnectable, Extendable {
-    /// Closes the database connection when finished.
+    /// If `true`, this connection has been closed and is no longer valid.
+    /// This is used by `DatabaseConnectionPool` to prune inactive connections.
+    var isClosed: Bool { get }
+
+    /// Closes the `DatabaseConnection`.
     func close()
 }
 
 extension DatabaseConnection {
-    /// See `DatabaseConnectable.connect(to:)`
-    public func connect<D>(to database: DatabaseIdentifier<D>?) -> Future<D.Connection> {
-        return Future.map(on: self) {
-            guard let conn = self as? D.Connection else {
-                throw DatabaseKitError(
-                    identifier: "connectable",
-                    reason: "Unexpected \(#function): \(self) not \(D.Connection.self)",
-                    source: .capture()
-                )
-            }
-            return conn
+    /// See `DatabaseConnectable`.
+    public func databaseConnection<Database>(to database: DatabaseIdentifier<Database>?) -> Future<Database.Connection> {
+        let future: Future<Database.Connection>
+        if let conn = self as? Database.Connection {
+            future = eventLoop.newSucceededFuture(result: conn)
+        } else {
+            let error = DatabaseKitError(
+                identifier: "databaseConnectable",
+                reason: "Could not convert `\(Self.self)` to `\(Database.Connection.self)`.",
+                possibleCauses: [
+                    "You are using a database connection from a different database."
+                ]
+            )
+            future = eventLoop.newFailedFuture(error: error)
         }
+        return future
     }
 }
-
-/// MARK: Deprecated
-
-extension DatabaseConnection {
-    @available(*, deprecated, message: "Implement on `DatabaseConnection` instead.")
-    public var extend: Extend {
-        get {
-            let cache: ExtendCache
-            if let existing = extendCache.currentValue {
-                cache = existing
-            } else {
-                cache = .init()
-                extendCache.currentValue = cache
-            }
-
-            let extend: Extend
-            if let existing = cache.storage[.init(self)] {
-                extend = existing
-            } else {
-                extend = .init()
-                cache.storage[.init(self)] = extend
-            }
-
-            return extend
-        }
-        set {
-            let cache: ExtendCache
-            if let existing = extendCache.currentValue {
-                cache = existing
-            } else {
-                cache = .init()
-                extendCache.currentValue = cache
-            }
-            cache.storage[.init(self)] = newValue
-        }
-    }
-}
-
-fileprivate final class ExtendCache {
-    var storage: [ObjectIdentifier: Extend]
-    init() { storage = [:] }
-}
-
-fileprivate var extendCache: ThreadSpecificVariable<ExtendCache> = .init()

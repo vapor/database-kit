@@ -1,44 +1,31 @@
 /// Each database in your application receives its own identifier.
-/// Your main database should use the `.default` identifier.
+///
 /// Create identifiers for your non-default databases by adding
 /// a static extension to this struct:
 ///
 ///     extension DatabaseIdentifier {
 ///         /// My custom DB.
-///         public static var myCustom: DatabaseIdentifier {
-///             return DatabaseIdentifier("myCustom")
+///         public static var myCustom: DatabaseIdentifier<FooDatabase> {
+///             return DatabaseIdentifier("foo-custom")
 ///         }
 ///     }
 ///
-public struct DatabaseIdentifier<D: Database> {
+public struct DatabaseIdentifier<D: Database>: Equatable, Hashable, CustomStringConvertible, ExpressibleByStringLiteral {
     /// The unique id.
     public let uid: String
 
-    /// Create a new database identifier.
-    public init(_ uid: String, type: D.Type = D.self) {
-        self.uid = uid
-    }
-}
-
-extension DatabaseIdentifier: Equatable {
-    /// See Equatable.==
-    public static func ==(lhs: DatabaseIdentifier, rhs: DatabaseIdentifier) -> Bool {
-        return lhs.uid == rhs.uid
-    }
-}
-
-extension DatabaseIdentifier: Hashable {
-    /// See Hashable.hashValue
-    public var hashValue: Int {
-        return uid.hashValue
-    }
-}
-
-// MARK: Default
-
-extension DatabaseIdentifier: CustomStringConvertible {
+    /// See `CustomStringConvertible`.
     public var description: String {
         return uid
     }
-}
 
+    /// Create a new `DatabaseIdentifier`.
+    public init(_ uid: String) {
+        self.uid = uid
+    }
+
+    /// See `ExpressibleByStringLiteral`.
+    public init(stringLiteral value: String) {
+        self.init(value)
+    }
+}

@@ -1,32 +1,20 @@
 /// A database query, schema, tranasaction, etc logger.
 public final class DatabaseLogger {
-    /// A simple database logger that prints logs.
-    public static var print: DatabaseLogger {
-        return DatabaseLogger { log in
-            Swift.print(log)
-        }
-    }
+    /// Current `DatabaseLogHandler`.
+    public let handler: DatabaseLogHandler
 
-    /// Closure for handling logs.
-    public typealias LogHandler = (DatabaseLog) -> ()
-
-    /// Current database log handler.
-    public var handler: LogHandler
-
-    /// Database identifier
-    public var dbID: String
+    /// Database identifier.
+    private let dbuid: String
 
     /// Create a new database logger.
-    public init(handler: @escaping LogHandler) {
-        self.dbID = "db"
+    public init<D>(database: DatabaseIdentifier<D>, handler: DatabaseLogHandler) {
+        self.dbuid = database.uid
         self.handler = handler
     }
 
     /// Records a database log to the current handler.
-    public func record(log: DatabaseLog) {
-        var log = log
-        log.dbID = dbID
-        return handler(log)
+    public func record(query: String, values: [String] = []) {
+        let log = DatabaseLog(dbuid: dbuid, query: query, values: values, date: .init())
+        return handler.record(log: log)
     }
 }
-

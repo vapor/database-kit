@@ -20,6 +20,12 @@ jobs:
       - run: 
           name: Run unit tests
           command: swift test
+
+  linux-release:
+    docker:
+      - image: codevapor/swift:4.1
+    steps:
+      - checkout
       - run: 
           name: Compile code with optimizations
           command: swift build -c release
@@ -31,7 +37,7 @@ jobs:
     steps:
       - run:
           name: Clone Vapor
-          command: git clone -b master https://github.com/vapor/vapor.git
+          command: git clone -b dbkit-gm https://github.com/vapor/vapor.git
           working_directory: ~/
       - run:
           name: Switch Vapor to this DatabaseKit revision
@@ -49,7 +55,7 @@ jobs:
     steps:
       - run:
           name: Clone Fluent
-          command: git clone -b master https://github.com/vapor/fluent.git
+          command: git clone -b dbkit-gm https://github.com/vapor/fluent.git
           working_directory: ~/
       - run:
           name: Switch Fluent to this DatabaseKit revision
@@ -66,7 +72,7 @@ jobs:
     steps:
       - run:
           name: Clone Fluent SQLite
-          command: git clone -b master https://github.com/vapor/fluent-sqlite.git
+          command: git clone -b dbkit-gm https://github.com/vapor/fluent-sqlite.git
           working_directory: ~/
       - run:
           name: Switch Fluent SQLite to this DatabaseKit revision
@@ -84,13 +90,12 @@ jobs:
         environment:
           MYSQL_ALLOW_EMPTY_PASSWORD: true
           MYSQL_DATABASE: vapor_database
-          # MYSQL_ROOT_HOST: %
           MYSQL_USER: vapor_username
           MYSQL_PASSWORD: vapor_password
     steps:
       - run:
           name: Clone Fluent MySQL
-          command: git clone -b master https://github.com/vapor/fluent-mysql.git
+          command: git clone -b dbkit-gm https://github.com/vapor/fluent-mysql.git
           working_directory: ~/
       - run:
           name: Switch Fluent MySQL to this DatabaseKit revision
@@ -111,7 +116,7 @@ jobs:
     steps:
       - run:
           name: Clone Fluent PostgreSQL
-          command: git clone -b master https://github.com/vapor/fluent-postgresql.git
+          command: git clone -b dbkit-gm https://github.com/vapor/fluent-postgresql.git
           working_directory: ~/
       - run:
           name: Switch Fluent PostgreSQL to this DatabaseKit revision
@@ -129,7 +134,7 @@ jobs:
     steps:
       - run:
           name: Clone Redis
-          command: git clone -b master https://github.com/vapor/redis.git
+          command: git clone -b dbkit-gm https://github.com/vapor/redis.git
           working_directory: ~/
       - run:
           name: Switch Redis to this DatabaseKit revision
@@ -146,6 +151,7 @@ workflows:
   tests:
     jobs:
       - linux
+      - linux-release
       - linux-vapor
       - linux-fluent
       - linux-fluent-sqlite
