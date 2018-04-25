@@ -63,7 +63,7 @@ public struct DatabasesConfig: Service {
     ///
     /// - parameters:
     ///     - database: `DatabaseIdentifier` identifying the database to enable logging on.
-    ///     - logger: Instance of `DatabaseLogger` to use.
+    ///     - logger: Instance of `DatabaseLogHandler` to use.
     public mutating func enableLogging<D>(on db: DatabaseIdentifier<D>, logger: DatabaseLogHandler = PrintLogHandler()) where D: LogSupporting {
         let logger = DatabaseLogger(database: db, handler: logger)
         var config = connectionConfig[db.uid] as? ConnectionConfig<D> ?? .init()

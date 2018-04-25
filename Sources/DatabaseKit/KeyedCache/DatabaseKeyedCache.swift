@@ -5,12 +5,17 @@ public final class DatabaseKeyedCache<Database>: KeyedCache, Service
     /// Pool to use for requesting connections.
     private let pool: DatabaseConnectionPool<Database>
 
+    // MARK: Init
+
     /// Creates a new `DatabaseKeyedCache` on the supplied pool.
     ///
-    /// - pool: Use to generate connections for get, set, and remove commands.
+    /// - parameters:
+    ///     - pool: Use to generate connections for get, set, and remove commands.
     public init(pool: DatabaseConnectionPool<Database>) {
         self.pool = pool
     }
+
+    // MARK: Keyed Cache
 
     /// See `KeyedCache`.
     public func get<D>(_ key: String, as decodable: D.Type) -> Future<D?> where D : Decodable {
@@ -35,6 +40,8 @@ public final class DatabaseKeyedCache<Database>: KeyedCache, Service
 }
 
 extension Container {
+    // MARK: Keyed Cache
+
     /// Creates a `DatabaseKeyedCache` for the identified `Database`.
     ///
     /// - parameters:
