@@ -37,7 +37,7 @@ jobs:
     steps:
       - run:
           name: Clone Vapor
-          command: git clone -b dbkit-gm https://github.com/vapor/vapor.git
+          command: git clone -b master https://github.com/vapor/vapor.git
           working_directory: ~/
       - run:
           name: Switch Vapor to this DatabaseKit revision
@@ -55,7 +55,7 @@ jobs:
     steps:
       - run:
           name: Clone Fluent
-          command: git clone -b dbkit-gm https://github.com/vapor/fluent.git
+          command: git clone -b master https://github.com/vapor/fluent.git
           working_directory: ~/
       - run:
           name: Switch Fluent to this DatabaseKit revision
@@ -72,7 +72,7 @@ jobs:
     steps:
       - run:
           name: Clone Fluent SQLite
-          command: git clone -b dbkit-gm https://github.com/vapor/fluent-sqlite.git
+          command: git clone -b master https://github.com/vapor/fluent-sqlite.git
           working_directory: ~/
       - run:
           name: Switch Fluent SQLite to this DatabaseKit revision
@@ -95,7 +95,7 @@ jobs:
     steps:
       - run:
           name: Clone Fluent MySQL
-          command: git clone -b dbkit-gm https://github.com/vapor/fluent-mysql.git
+          command: git clone -b master https://github.com/vapor/fluent-mysql.git
           working_directory: ~/
       - run:
           name: Switch Fluent MySQL to this DatabaseKit revision
@@ -116,7 +116,7 @@ jobs:
     steps:
       - run:
           name: Clone Fluent PostgreSQL
-          command: git clone -b dbkit-gm https://github.com/vapor/fluent-postgresql.git
+          command: git clone -b master https://github.com/vapor/fluent-postgresql.git
           working_directory: ~/
       - run:
           name: Switch Fluent PostgreSQL to this DatabaseKit revision
@@ -134,7 +134,7 @@ jobs:
     steps:
       - run:
           name: Clone Redis
-          command: git clone -b dbkit-gm https://github.com/vapor/redis.git
+          command: git clone -b master https://github.com/vapor/redis.git
           working_directory: ~/
       - run:
           name: Switch Redis to this DatabaseKit revision

@@ -26,6 +26,18 @@ extension Container {
     public func withConnection<Database, T>(to dbid: DatabaseIdentifier<Database>, closure: @escaping (Database.Connection) throws -> Future<T>) -> Future<T> {
         return withNewConnection(to: dbid, closure: closure)
     }
+
+    /// See `Container.newConnection(to:)`.
+    @available(*, deprecated, renamed: "newConnection(to:)")
+    public func requestConnection<D>(to dbid: DatabaseIdentifier<D>) -> Future<D.Connection> {
+        return newConnection(to: dbid)
+    }
+
+    /// See `DatabaseConnection.close()`.
+    @available(*, deprecated, renamed: "close()")
+    public func releaseConnection<D>(_ conn: D.Connection, to dbid: DatabaseIdentifier<D>) {
+        return conn.close()
+    }
 }
 
 extension KeyedCache {
