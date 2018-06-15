@@ -73,6 +73,23 @@ public struct DatabasesConfig: Service {
         }
         connectionConfig[db.uid] = config
     }
+    
+    /// Adds a new configuration handler to the referenced database.
+    ///
+    ///     databases.addConfigurationHandler(on: .sqlite) { sqliteConn in
+    ///         // configure conn
+    ///     }
+    ///
+    /// - parameters:
+    ///     - database: `DatabaseIdentifier` identifying the database to configure.
+    ///     - configure: Handles incoming connections, returns a future indicating completion.
+    public mutating func appendConfigurationHandler<D>(on db: DatabaseIdentifier<D>, _ configure: @escaping (D.Connection) -> Future<Void>) {
+        var config = connectionConfig[db.uid] as? ConnectionConfig<D> ?? .init()
+        config.pipeline.append { conn in
+            return configure(conn)
+        }
+        connectionConfig[db.uid] = config
+    }
 
     // MARK: Resolve
 

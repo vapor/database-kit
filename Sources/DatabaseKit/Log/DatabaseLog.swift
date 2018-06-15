@@ -14,7 +14,7 @@ public struct DatabaseLog: CustomStringConvertible {
 
     /// See `CustomStringConvertible`.
     public var description: String {
-        return "[\(dbuid)] [\(date)] \(query) \(values)"
+        return "[" + dbuid + "] [" + date.description + "] " + query + " [" + values.joined(separator: ", ") + "]"
     }
 
     /// Create a new `DatabaseLog`.
