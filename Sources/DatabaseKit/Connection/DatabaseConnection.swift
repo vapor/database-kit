@@ -15,6 +15,38 @@ public protocol DatabaseConnection: DatabaseConnectable, Extendable {
     func close()
 }
 
+public protocol DatabaseQueryable {
+    associatedtype Query
+    associatedtype Output
+    
+    func query(_ query: Query, _ handler: @escaping (Output) throws -> ()) -> Future<Void>
+}
+
+extension DatabaseConnectionPool: DatabaseQueryable where Database.Connection: DatabaseQueryable {
+    public typealias Query = Database.Connection.Query
+    public typealias Output = Database.Connection.Output
+    
+    public func query(_ query: Database.Connection.Query, _ handler: @escaping (Database.Connection.Output) throws -> ()) -> Future<Void> {
+        return withConnection { conn in
+            return conn.query(query, handler)
+        }
+    }
+}
+
+extension DatabaseQueryable {
+    /// Executes the supplied `SQLiteQuery` on the connection, aggregating the results into an array.
+    ///
+    ///     let rows = try conn.query("SELECT * FROM users").wait()
+    ///
+    /// - parameters:
+    ///     - query: `SQLiteQuery` to execute.
+    /// - returns: A `Future` containing array of rows.
+    public func query(_ query: Query) -> Future<[Output]> {
+        var rows: [Output] = []
+        return self.query(query) { rows.append($0) }.map { rows }
+    }
+}
+
 extension DatabaseConnection {
     /// See `DatabaseConnectable`.
     public func databaseConnection<Database>(to database: DatabaseIdentifier<Database>?) -> Future<Database.Connection> {
