@@ -2,4 +2,5 @@
 *.xcodeproj
 Package.resolved
 .DS_Store
+DerivedData
 

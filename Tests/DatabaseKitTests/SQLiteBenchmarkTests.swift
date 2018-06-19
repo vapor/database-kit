@@ -95,6 +95,7 @@ private final class FooDatabase: Database, LogSupporting {
 }
 
 private final class FooConnection: BasicWorker, DatabaseConnection {
+    typealias Database = FooDatabase
     var isClosed: Bool
     var extend: Extend
     let eventLoop: EventLoop
