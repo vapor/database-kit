@@ -11,9 +11,25 @@ extension Container {
     ///     try app.releaseCachedConnections()
     ///
     /// - parameters:
-    ///     - dbid: `DatabaseIdentifier` of a database registered with `Databases`.
+    ///     - database: `DatabaseIdentifier` of a database registered with `Databases`.
     /// - returns: A future containing the `DatabaseConnection`.
     public func requestCachedConnection<Database>(to database: DatabaseIdentifier<Database>) -> Future<Database.Connection> {
+        return requestCachedConnection(to: database, poolContainer: self)
+    }
+    
+    /// Returns a Future connection to the `Database` specified by the supplied `DatabaseIdentifier`.
+    /// Subsequent calls to this method with the same database ID will return the same connection.
+    /// You must call `releaseCachedConnections()` to release the connections.
+    ///
+    ///     let conn = try app.requestCachedConnection(to: .psql).wait()
+    ///     // use conn
+    ///     try app.releaseCachedConnections()
+    ///
+    /// - parameters:
+    ///     - database: `DatabaseIdentifier` of a database registered with `Databases`.
+    ///     - poolContainer: The container which is used to resolve `DatabaseConnectionPool`.
+    /// - returns: A future containing the `DatabaseConnection`.
+    public func requestCachedConnection<Database>(to database: DatabaseIdentifier<Database>, poolContainer: Container) -> Future<Database.Connection> {
         do {
             /// use the container to create a connection cache
             /// this must have been registered with the services
@@ -28,7 +44,7 @@ extension Container {
             connections.cache[database.uid] = active
 
             /// first get a pointer to the pool
-            let pool = try connectionPool(to: database)
+            let pool = try poolContainer.connectionPool(to: database)
             let conn = pool.requestConnection().map(to: Database.Connection.self) { conn in
                 /// then create an active connection that knows how to
                 /// release itself
