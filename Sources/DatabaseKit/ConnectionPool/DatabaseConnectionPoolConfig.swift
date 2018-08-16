@@ -2,7 +2,7 @@
 public struct DatabaseConnectionPoolConfig: ServiceType {
     /// Creates a new `DatabaseConnectionPoolConfig` with default settings.
     public static func `default`() -> DatabaseConnectionPoolConfig {
-        return .init(maxConnections: System.coreCount)
+        return .init(maxConnections: 10)
     }
 
     /// See `ServiceType`.
