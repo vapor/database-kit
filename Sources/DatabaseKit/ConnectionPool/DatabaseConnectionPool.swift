@@ -24,6 +24,7 @@ public final class DatabaseConnectionPool<Database> where Database: DatabaseKit.
 
     /// Available connections.
     private var actives: [ActiveDatabasePoolConnection<Database>]
+    private var activeCount: Int = 0
 
     /// Notified when more connections are available.
     private var waiters: [Promise<Database.Connection>]
@@ -58,7 +59,13 @@ public final class DatabaseConnectionPool<Database> where Database: DatabaseKit.
     public func withConnection<T>(_ closure: @escaping (Database.Connection) throws -> Future<T>) -> Future<T> {
         let release = releaseConnection
         return requestConnection().flatMap(to: T.self) { conn in
-            return try closure(conn).always { release(conn) }
+            do {
+                return try closure(conn).always { release(conn) }
+            } catch {
+                release(conn)
+
+                throw error
+            }
         }
     }
 
@@ -91,15 +98,20 @@ public final class DatabaseConnectionPool<Database> where Database: DatabaseKit.
                     return newConn
                 }
             }
-        } else if actives.count < config.maxConnections  {
+        } else if activeCount < config.maxConnections  {
             // all connections are busy, but we have room to open a new connection!
-            let active = ActiveDatabasePoolConnection<Database>()
-            self.actives.append(active)
+            self.activeCount += 1
 
             // make the new connection
             return database.newConnection(on: eventLoop).map { newConn in
-                active.connection = newConn
+                let active = ActiveDatabasePoolConnection<Database>(connection: newConn)
+                self.actives.append(active)
+
                 return newConn
+            }.catchMap { error in
+                self.activeCount -= 1
+
+                throw error
             }
         } else {
             // connections are exhausted, we must wait for one to be returned
@@ -141,13 +153,14 @@ public final class DatabaseConnectionPool<Database> where Database: DatabaseKit.
 private final class ActiveDatabasePoolConnection<Database> where Database: DatabaseKit.Database {
     /// The actual connection. Using an IUO to allow for adding the active
     /// connection to the array before it may actually be read.
-    var connection: Database.Connection!
+    var connection: Database.Connection
 
     /// `true` if the connection is not waiting to be released.
     var isAvailable: Bool
 
     /// Creates a new `ActiveDatabasePoolConnection`.
-    init() {
+    init(connection: Database.Connection) {
+        self.connection = connection
         self.isAvailable = false
     }
 }
