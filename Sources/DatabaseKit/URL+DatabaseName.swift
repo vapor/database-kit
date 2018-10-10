@@ -1,3 +1,5 @@
+import Foundation
+
 /// Adds conveniences for using URLs referencing database servers.
 extension URL {
     /// If present, this specifies a database on database servers that support multiple databases.
@@ -8,6 +10,8 @@ extension URL {
     ///     URL(string: "/vapor_database/asdf")?.databaseName // "vapor_database"
     ///
     public var databaseName: String? {
-        return path.split(separator: "/", omittingEmptySubsequences: true).first.flatMap(String.init)
+        return path.split(separator: "/", omittingEmptySubsequences: true)
+            .first
+            .flatMap(String.init)
     }
 }
