@@ -19,8 +19,12 @@ extension Container {
     /// - returns: A future containing the result of the closure.
     public func withNewConnection<Database, T>(to dbid: DatabaseIdentifier<Database>, closure: @escaping (Database.Connection) throws -> Future<T>) -> Future<T> {
         return newConnection(to: dbid).flatMap(to: T.self) { conn in
-            return try closure(conn).always {
+            do {
+                return try closure(conn).always { conn.close() }
+            } catch {
                 conn.close()
+                
+                throw error
             }
         }
     }
