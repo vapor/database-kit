@@ -1,19 +1,9 @@
+import NIO
+
 /// Types conforming to this protocol can be used as a database for connections and connection pools.
 ///
 /// This protocol is the basis for `...Supporting` protocols that further extend it, such as `KeyedCacheSupporting`.
-public protocol Database {
-    /// This database's connection type. Protocols that extend `Database` should be implemented using
-    /// static methods on this type that supplied an instance of `Connection`.
-    associatedtype Connection: DatabaseConnection
-
-    /// Creates a new `DatabaseConnection` that will perform async work on the supplied `Worker`.
-    ///
-    ///     let conn = try database.newConnection(on: ...).wait()
-    ///
-    /// - parameters:
-    ///     - worker: `Worker` to perform async work on.
-    func newConnection(on worker: Worker) -> Future<Connection>
-}
+public protocol Database: ConnectionPoolSource where Connection: DatabaseConnection { }
 
 extension Database {
     /// Creates a new `DatabaseConnectionPool` for this `Database`.
@@ -25,7 +15,20 @@ extension Database {
     ///     - config: `DatabaseConnectionPoolConfig` that will be used to create the actual pool.
     ///     - worker: `Worker` to perform async work on.
     /// - returns: Newly created `DatabaseConnectionPool`.
-    public func newConnectionPool(config: DatabaseConnectionPoolConfig, on worker: Worker) -> DatabaseConnectionPool<Self> {
-        return DatabaseConnectionPool(config: config, database: self, on: worker)
+    public func makeConnectionPool(config: ConnectionPoolConfig) -> ConnectionPool<Self> {
+        return ConnectionPool(config: config, source: self)
+    }
+}
+
+
+extension Database {
+    public func withConnection<Result>(closure: @escaping (Connection) -> EventLoopFuture<Result>) -> EventLoopFuture<Result> {
+        return self.makeConnection().flatMap { conn -> EventLoopFuture<Result> in
+            return closure(conn).flatMap { result in
+                return conn.close().map { result }
+            }.flatMapError { error in
+                return conn.close().flatMapThrowing { throw error }
+            }
+        }
     }
 }

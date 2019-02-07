@@ -1,3 +1,5 @@
+import Foundation
+
 /// Adds conveniences for using URLs referencing database servers.
 extension URL {
     /// If present, this specifies a database on database servers that support multiple databases.

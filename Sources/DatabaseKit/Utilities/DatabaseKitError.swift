@@ -1,7 +1,6 @@
-import Debugging
-
 /// Errors that can be thrown while working with Vapor.
-public struct DatabaseKitError: Debuggable {
+public struct DatabaseKitError: Error {
+    #warning("use enum?")
     /// See `Debuggable`.
     public static let readableName = "DatabaseKit Error"
 
@@ -10,12 +9,6 @@ public struct DatabaseKitError: Debuggable {
 
     /// See `Debuggable`.
     public var reason: String
-
-    /// See `Debuggable`.
-    public var sourceLocation: SourceLocation?
-
-    /// See `Debuggable`.
-    public var stackTrace: [String]
 
     /// See `Debuggable`.
     public var suggestedFixes: [String]
@@ -36,8 +29,6 @@ public struct DatabaseKitError: Debuggable {
     ) {
         self.identifier = identifier
         self.reason = reason
-        self.sourceLocation = SourceLocation(file: file, function: function, line: line, column: column, range: nil)
-        self.stackTrace = DatabaseKitError.makeStackTrace()
         self.suggestedFixes = suggestedFixes
         self.possibleCauses = possibleCauses
     }

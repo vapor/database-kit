@@ -1,57 +1,51 @@
-/// See `DatabasesConfig`.
-@available(*, deprecated, renamed: "DatabasesConfig")
-public typealias DatabaseConfig = DatabasesConfig
+import NIO
 
-extension Database {
-    // MARK: Deprecated
+/// nothing here yet...
 
-    /// See `Database.newConnection(on:)`.
-    @available(*, deprecated, renamed: "newConnection(on:)")
-    public func makeConnection(on worker: Worker) -> Future<Connection> {
-        return newConnection(on: worker)
+extension Databases {
+    @available(*, unavailable, message: "Register a database instance instead.")
+    public mutating func add<D>(database: D.Type, as id: DatabaseIdentifier<D>) {
+        fatalError()
     }
-
-    /// See `Database.newConnectionPool(on:worker:)`.
-    @available(*, deprecated, renamed: "newConnectionPool(on:worker:)")
-    public func makeConnectionPool(max: UInt, on worker: Worker) -> DatabaseConnectionPool<Self> {
-        return newConnectionPool(config: DatabaseConnectionPoolConfig(maxConnections: numericCast(max)), on: worker)
-    }
-}
-
-extension Container {
-    // MARK: Deprecated
-
-    /// See `Container.withNewConnection(to:closure:)`.
-    @available(*, deprecated, renamed: "withNewConnection(to:closure:)")
-    public func withConnection<Database, T>(to dbid: DatabaseIdentifier<Database>, closure: @escaping (Database.Connection) throws -> Future<T>) -> Future<T> {
-        return withNewConnection(to: dbid, closure: closure)
-    }
-
-    /// See `Container.newConnection(to:)`.
-    @available(*, deprecated, renamed: "newConnection(to:)")
-    public func requestConnection<D>(to dbid: DatabaseIdentifier<D>) -> Future<D.Connection> {
-        return newConnection(to: dbid)
-    }
-
-    /// See `DatabaseConnection.close()`.
-    @available(*, deprecated, renamed: "close()")
-    public func releaseConnection<D>(_ conn: D.Connection, to dbid: DatabaseIdentifier<D>) {
-        return conn.close()
-    }
-}
-
-extension KeyedCache {
-    // MARK: Deprecated
     
-    /// See `KeyedCache.get(_:as:)`.
-    @available(*, deprecated, renamed: "get(_:as:)")
-    public func get<D>(_ type: D.Type, forKey key: String) -> Future<D?> where D: Decodable {
-        return get(key, as: D.self)
+    @available(*, unavailable, message: "Register a database instance instead.")
+    public mutating func add<D>(as id: DatabaseIdentifier<D>, database: @escaping (Any) throws -> D) {
+        fatalError()
     }
 
-    /// See `KeyedCache.set(_:to:)`.
-    @available(*, deprecated, renamed: "set(_:to:)")
-    public func set<E>(_ value: E, forKey key: String) -> Future<Void> where E: Encodable {
-        return set(key, to: value)
+    @available(*, unavailable, renamed: "resolve")
+    public func resolve(on container: Any) throws -> Databases {
+        fatalError()
+    }
+    
+    @available(*, unavailable, message: "Enable logging in database specific config instead.")
+    public mutating func enableLogging<D>(on db: DatabaseIdentifier<D>, logger: Any) {
+        fatalError()
+    }
+    
+    @available(*, unavailable, message: "Use database specific config instead.")
+    public mutating func appendConfigurationHandler<D>(on db: DatabaseIdentifier<D>, _ configure: @escaping (D.Connection) -> EventLoopFuture<Void>) {
+        fatalError()
     }
 }
+
+@available(*, unavailable, renamed: "Databases")
+public typealias DatabasesConfig = Databases
+
+@available(*, unavailable, renamed: "ConnectionPool")
+public typealias DatabaseConnectionPool = Any
+
+@available(*, unavailable, renamed: "ConnectionPoolConfig")
+public typealias DatabaseConnectionPoolConfig = Any
+
+@available(*, unavailable, message: "Use ORM-specific database protocol instead.")
+public typealias DatabaseQueryable = Any
+
+@available(*, unavailable, message: "Use ORM-specific database protocol instead.")
+public typealias DatabaseConnectable = Any
+
+@available(*, unavailable)
+public typealias DatabaseStringFindable = Any
+
+@available(*, unavailable, message: "Enable logging in database specific config instead.")
+public typealias LogSupporting = Any

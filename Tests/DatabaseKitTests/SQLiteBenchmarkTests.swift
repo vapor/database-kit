@@ -1,5 +1,6 @@
 import DatabaseKit
 import XCTest
+import NIO
 
 final class DatabaseKitTests: XCTestCase {
     func testURLDatabaseName() {
@@ -7,8 +8,8 @@ final class DatabaseKitTests: XCTestCase {
     }
 
     func testConnectionPooling() throws {
-        let foo = FooDatabase()
-        let pool = foo.newConnectionPool(config: .init(maxConnections: 2), on: EmbeddedEventLoop())
+        let foo = FooDatabase(on: EmbeddedEventLoop())
+        let pool = foo.makeConnectionPool(config: .init(maxConnections: 2))
 
         // make two connections
         let connA = try pool.requestConnection().wait()
@@ -19,7 +20,7 @@ final class DatabaseKitTests: XCTestCase {
 
         // try to make a third, but pool only supports 2
         var connC: FooConnection?
-        pool.requestConnection().do { connC = $0 }.catch { XCTFail("\($0)") }
+        pool.requestConnection().whenSuccess { connC = $0 }
         XCTAssertNil(connC)
         XCTAssertEqual(foo.connectionsCreated, 2)
 
@@ -31,83 +32,83 @@ final class DatabaseKitTests: XCTestCase {
 
         // try to make a third again, with two active
         var connD: FooConnection?
-        pool.requestConnection().do { connD = $0 }.catch { XCTFail("\($0)") }
+        pool.requestConnection().whenSuccess { connD = $0 }
         XCTAssertNil(connD)
         XCTAssertEqual(foo.connectionsCreated, 2)
 
         // this time, close the connection before releasing it
-        connC!.close()
+        try connC!.close().wait()
         pool.releaseConnection(connC!)
         XCTAssert(connD !== connB)
         XCTAssertEqual(connD?.isClosed, false)
         XCTAssertEqual(foo.connectionsCreated, 3)
     }
-
-    func testDatabasesConfig() throws {
-        var config = DatabasesConfig()
-
-        let a: DatabaseIdentifier<FooDatabase> = "a"
-        let b: DatabaseIdentifier<FooDatabase> = "b"
-
-        do {
-            let fooA = FooDatabase()
-            let fooB = FooDatabase()
-            config.add(database: fooA, as: a)
-            config.enableLogging(on: a)
-            config.add(database: fooB, as: b)
-        }
-
-        let container = BasicContainer(config: .init(), environment: .testing, services: .init(), on: EmbeddedEventLoop())
-        let dbs = try config.resolve(on: container)
-        do {
-            let connA = try dbs.requireDatabase(for: a).newConnection(on: container).wait()
-            let connB = try dbs.requireDatabase(for: b).newConnection(on: container).wait()
-            XCTAssertNotNil(connA.logger)
-            XCTAssertNil(connB.logger)
-        }
-    }
-
-    func testDocs() throws {
+    
+    func testConnectionPoolPerformance() {
+        let foo = FooDatabase(on: EmbeddedEventLoop())
+        let pool = foo.makeConnectionPool(config: .init(maxConnections: 10))
         
+        measure {
+            for _ in 0..<10_000 {
+                do {
+                    let connA = try! pool.requestConnection().wait()
+                    pool.releaseConnection(connA)
+                }
+                do {
+                    let connA = try! pool.requestConnection().wait()
+                    let connB = try! pool.requestConnection().wait()
+                    let connC = try! pool.requestConnection().wait()
+                    pool.releaseConnection(connB)
+                    pool.releaseConnection(connC)
+                    pool.releaseConnection(connA)
+                }
+                do {
+                    let connA = try! pool.requestConnection().wait()
+                    let connB = try! pool.requestConnection().wait()
+                    pool.releaseConnection(connA)
+                    pool.releaseConnection(connB)
+                }
+            }
+        }
     }
 
     static let allTests = [
         ("testURLDatabaseName", testURLDatabaseName),
         ("testConnectionPooling", testConnectionPooling),
-        ("testDatabasesConfig", testDatabasesConfig),
+        ("testConnectionPoolPerformance", testConnectionPoolPerformance),
     ]
 }
 
 // MARK: Private
 
-private final class FooDatabase: Database, LogSupporting {
+private final class FooDatabase: Database {
+    typealias Connection = FooConnection
+
     var connectionsCreated: Int
-    init() {
+    var eventLoop: EventLoop
+    
+    init(on eventLoop: EventLoop) {
+        self.eventLoop = eventLoop
         self.connectionsCreated = 0
     }
-    func newConnection(on worker: Worker) -> EventLoopFuture<FooConnection> {
+    
+    func makeConnection() -> EventLoopFuture<FooConnection> {
         connectionsCreated += 1
-        return worker.eventLoop.newSucceededFuture(result: FooConnection(on: worker))
-    }
-    static func enableLogging(_ logger: DatabaseLogger, on conn: FooConnection) {
-        conn.logger = logger
+        return self.eventLoop.makeSucceededFuture(FooConnection(on: self.eventLoop))
     }
 }
 
-private final class FooConnection: BasicWorker, DatabaseConnection {
-    typealias Database = FooDatabase
+private final class FooConnection: DatabaseConnection {
     var isClosed: Bool
-    var extend: Extend
     let eventLoop: EventLoop
-    var logger: DatabaseLogger?
 
-    init(on worker: Worker) {
+    init(on eventLoop: EventLoop) {
         self.isClosed = false
-        self.eventLoop = worker.eventLoop
-        self.extend = [:]
+        self.eventLoop = eventLoop
     }
 
-    func close() {
-        isClosed = true
+    func close() -> EventLoopFuture<Void> {
+        self.isClosed = true
+        return self.eventLoop.makeSucceededFuture(())
     }
 }

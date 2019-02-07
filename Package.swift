@@ -1,20 +1,16 @@
-// swift-tools-version:4.0
+// swift-tools-version:5.0
 import PackageDescription
 
 let package = Package(
-    name: "DatabaseKit",
+    name: "database-kit",
     products: [
         .library(name: "DatabaseKit", targets: ["DatabaseKit"]),
     ],
     dependencies: [
-        // 🌎 Utility package containing tools for byte manipulation, Codable, OS APIs, and debugging.
-        .package(url: "https://github.com/vapor/core.git", from: "3.0.0"),
-
-        // 📦 Dependency injection / inversion of control framework.
-        .package(url: "https://github.com/vapor/service.git", from: "1.0.0"),
+        .package(url: "https://github.com/vapor/nio-kit.git", .branch("master")),
     ],
     targets: [
-        .target(name: "DatabaseKit", dependencies: ["Async", "Service"]),
+        .target(name: "DatabaseKit", dependencies: ["NIOKit"]),
         .testTarget(name: "DatabaseKitTests", dependencies: ["DatabaseKit"]),
     ]
 )
