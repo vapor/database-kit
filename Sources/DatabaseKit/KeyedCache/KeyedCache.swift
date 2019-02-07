@@ -40,7 +40,7 @@ extension KeyedCache {
     /// - parameters:
     ///     - key: Cache key to access.
     /// - returns: A future containing an optional value of `D`, nil if no value was found.
-    func get<D>(_ key: String) -> Future<D?> where D: Decodable {
+    public func get<D>(_ key: String) -> Future<D?> where D: Decodable {
         return get(key, as: D.self)
     }
 }
